@@ -80,7 +80,7 @@ void follow_trajectory() {
         counter = 0;
         GPS::set_current_position_as_origin();
 
-        TrajectoryLogger::log_controller_state();
+        TrajectoryLogger::log_controller_state(); // only log initial controller state, this is too much data to log every frame
       }
 
       Controller_Input ci;

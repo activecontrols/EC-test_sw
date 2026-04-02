@@ -32,7 +32,7 @@ struct __packed EntryFlags {
   bool controller_state : 1;
 };
 
-static_assert(sizeof(EntryFlags) == 1, "sizeof(MeasurementFlags) error");
+static_assert(sizeof(EntryFlags) == 1, "sizeof(EntryFlags) error");
 
 struct __packed EntryBase {
   float time;
