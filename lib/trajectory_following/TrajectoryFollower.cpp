@@ -43,7 +43,7 @@ void follow_trajectory() {
     CommsSerial.println("Waiting on mag...");
     delay(100);
   }
-  while (!GPS::has_valid_recent_pos()) {
+  while (false) {
     GPS::pump_events();
     CommsSerial.println("Waiting on gps...");
     delay(100);
@@ -80,7 +80,7 @@ void follow_trajectory() {
         counter = 0;
         GPS::set_current_position_as_origin();
 
-        TrajectoryLogger::log_controller_state(); // only log initial controller state, this is too much data to log every frame
+        TrajectoryLogger::log_x_est(); // only log initial controller state, this is too much data to log every frame
       }
 
       Controller_Input ci;
@@ -158,7 +158,7 @@ void follow_trajectory() {
 
       if (flight_armed) // we only want to log flight data, not pre-flight
       {
-        TrajectoryLogger::log_trajectory_flash(timer, i, ci, co);
+        TrajectoryLogger::log_trajectory_flash(time_s, i, ci, co);
       }
 
       if (timer - lasttelemetry > TELEMETRY_INTERVAL_US) {

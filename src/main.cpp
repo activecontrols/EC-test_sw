@@ -10,6 +10,7 @@
 #include "TrajectoryFollower.h"
 #include "TrajectoryLoader.h"
 #include <Arduino.h>
+#include "TrajectoryLogger.h"
 
 CommsSerial_t<HardwareSerial> HW_CommsSerial(PIN_SERIAL_RX, PIN_SERIAL_TX);
 CommsSerial_t<USBSerial> USB_CommsSerial;
@@ -53,7 +54,7 @@ void setup() {
 
   CommandRouter::begin();
   Prop::begin();
-  Mag::begin();
+  // Mag::begin();
   GPS::begin();
   IMU::begin();
   GimbalServos::begin();

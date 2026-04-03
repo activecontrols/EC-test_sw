@@ -54,6 +54,11 @@ bool is_armed() {
   return log_enable;
 }
 
+void disarm() {
+  log_enable = false;
+  return;
+}
+
 void write(uint8_t *data, unsigned int len) {
   if (!log_enable)
     return;

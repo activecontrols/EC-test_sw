@@ -16,4 +16,6 @@ void complete();
 void write(uint8_t *data, unsigned int len);
 
 bool is_armed();
+
+void disarm();
 }; // namespace Logging

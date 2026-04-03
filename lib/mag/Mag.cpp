@@ -51,11 +51,11 @@ bool get_centered_reading(int &mx, int &my, int &mz) {
 }
 
 bool isMeasurementReady() {
-  return mag.isMeasurementReady();
+  return true;
 }
 
 bool beginMeasurement() {
-  return mag.beginMeasurement();
+  return true;
 }
 
 // do not use this function in time-critical code
