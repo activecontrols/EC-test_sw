@@ -6,7 +6,8 @@
         "${workspaceFolder}/**",
         "${workspaceFolder}/../lib/trajectory_following",
         "${workspaceFolder}/../lib/controller",
-        "${workspaceFolder}/../lib/data"
+        "${workspaceFolder}/../lib/data",
+        "${workspaceFolder}/../UI/include"
       ],
       "defines": [],
       "compilerPath": "g++",

@@ -189,10 +189,12 @@ void flight_data_periodic() {
 
   } else {
     if (FlightDataState.input_file != NULL && !FlightDataState.file_reading_paused) {
-      size_t read_size = fread(&active_packet, sizeof(active_packet), 1, FlightDataState.input_file);
-      if (read_size == 1) {
-        FlightDataState.file_read_progress += 1;
-        commit_packet();
+      for (int i = 0; i < 10; i++) { // TODO - try to sync with the timestamps
+        size_t read_size = fread(&active_packet, sizeof(active_packet), 1, FlightDataState.input_file);
+        if (read_size == 1) {
+          FlightDataState.file_read_progress += 1;
+          commit_packet();
+        }
       }
     }
   }
