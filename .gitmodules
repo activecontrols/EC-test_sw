@@ -7,3 +7,6 @@
 [submodule "UI/implot3d"]
 	path = UI/implot3d
 	url = https://github.com/brenocq/implot3d
+[submodule "data_postprocessing/eigen"]
+	path = data_postprocessing/eigen
+	url = https://gitlab.com/libeigen/eigen.git
