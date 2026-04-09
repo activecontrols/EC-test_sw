@@ -11,7 +11,7 @@
 #include "TrajectoryLoader.h"
 #include <Arduino.h>
 
-CommsSerial_t<HardwareSerial> HW_CommsSerial(Serial6);
+CommsSerial_t<HardwareSerial> HW_CommsSerial(PIN_SERIAL_RX, PIN_SERIAL_TX);
 CommsSerial_t<USBSerial> USB_CommsSerial;
 
 void ping(const char *args) {
@@ -23,7 +23,7 @@ void ping(const char *args) {
 void setup() {
   delay(3000);
   SPI.begin(); // spi is a shared interface, so we always begin here
-  CommsSerial.begin(115200);
+  CommsSerial.begin(57600);
   CommsSerial.println("Controller started.");
 
   // TODO - configure CS somewhere else!
