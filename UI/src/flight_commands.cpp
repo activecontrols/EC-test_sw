@@ -24,10 +24,17 @@ void process_cmd(uint8_t *cmd_buf, int cmd_len) {
   }
 }
 
+// TODO - merge these with the functions in CommandRouter if possible
 void flight_command_encode(uint8_t c) {
   if (c == END_CHAR && !escaped) { // true end
     process_cmd(flight_command_buffer, flight_command_buffer_pos);
     flight_command_buffer_pos = 0;
+  } else if (c == CR_CHAR && !escaped) { // true carriage return
+    // do nothing - we aren't a typewriter, no need to carriage return
+  } else if (c == BACKSPACE_CHAR && !escaped) { // true backspace
+    if (flight_command_buffer_pos > 0) {
+      flight_command_buffer_pos -= 1;
+    }
   } else if (c == ESCAPE_CHAR && !escaped) { // true escape start
     escaped = true;
   } else { // we might still be escaped here but if it isn't followed by a special character we will just ignore it...

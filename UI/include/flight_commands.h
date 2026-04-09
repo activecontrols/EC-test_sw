@@ -5,6 +5,8 @@
 
 #define ESCAPE_CHAR '\\'
 #define END_CHAR '\n'
+#define CR_CHAR '\r'
+#define BACKSPACE_CHAR '\b'
 
 void flight_command_encode(uint8_t c);
 #endif

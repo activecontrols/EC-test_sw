@@ -162,7 +162,7 @@ void flight_data_periodic() {
       read_from_serial_port(&FlightDataState.rtk_serial, &FlightDataState.rtk_serial_port_open, rtk_read_buf, RTK_READ_SIZE, &rtk_bytes_read);
       if (rtk_bytes_read > 0) {
         for (int i = 0; i < rtk_bytes_read; i++) {
-          if (rtk_read_buf[i] == ESCAPE_CHAR || rtk_write_buf[i] == END_CHAR) {
+          if (rtk_read_buf[i] == ESCAPE_CHAR || rtk_read_buf[i] == END_CHAR || rtk_read_buf[i] == CR_CHAR || rtk_read_buf[i] == BACKSPACE_CHAR) {
             rtk_write_buf[rtk_write_pos] = ESCAPE_CHAR;
             rtk_write_pos++;
           }
