@@ -96,7 +96,7 @@ void help(const char *command_name) {
   CommsSerial.println("Similar commands: ");
   for (const command &c : commands) {
     if (strncmp(c.name, command_name, strlen(command_name)) == 0) {
-      CommsSerial.println(c.help);
+      CommsSerial.println(c.name);
     }
   }
 }
