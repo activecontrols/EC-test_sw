@@ -54,6 +54,9 @@ struct Controller_Input {
   float gps_vel_west;
   float gps_vel_up;
 
+  float gps_pos_covar[3][3];
+  float gps_vel_covar[3][3];
+
   float target_pos_north;
   float target_pos_west;
   float target_pos_up;

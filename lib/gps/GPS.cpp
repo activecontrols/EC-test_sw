@@ -139,29 +139,29 @@ bool is_pos_cov_valid() {
 }
 
 // get velocity covariance
-void get_vel_cov(Matrix3_3 &out) {
-  out(0, 0) = ubx.cov.data->velCovNN;
-  out(0, 1) = -ubx.cov.data->velCovNE;
-  out(0, 2) = -ubx.cov.data->velCovND;
-  out(1, 0) = -ubx.cov.data->velCovNE;
-  out(1, 1) = ubx.cov.data->velCovEE;
-  out(1, 2) = ubx.cov.data->velCovED;
-  out(2, 0) = -ubx.cov.data->velCovND;
-  out(2, 1) = ubx.cov.data->velCovED;
-  out(2, 2) = ubx.cov.data->velCovDD;
+void get_vel_cov(float out[3][3]) {
+  out[0][2] = ubx.cov.data->velCovNN;
+  out[0][2] = -ubx.cov.data->velCovNE;
+  out[0][2] = -ubx.cov.data->velCovND;
+  out[1][2] = -ubx.cov.data->velCovNE;
+  out[1][2] = ubx.cov.data->velCovEE;
+  out[1][2] = ubx.cov.data->velCovED;
+  out[2][0] = -ubx.cov.data->velCovND;
+  out[2][1] = ubx.cov.data->velCovED;
+  out[2][2] = ubx.cov.data->velCovDD;
 }
 
 // get position covariance
-void get_pos_cov(Matrix3_3 &out) {
-  out(0, 0) = ubx.cov.data->posCovNN;
-  out(0, 1) = -ubx.cov.data->posCovNE;
-  out(0, 2) = -ubx.cov.data->posCovND;
-  out(1, 0) = -ubx.cov.data->posCovNE;
-  out(1, 1) = ubx.cov.data->posCovEE;
-  out(1, 2) = ubx.cov.data->posCovED;
-  out(2, 0) = -ubx.cov.data->posCovND;
-  out(2, 1) = ubx.cov.data->posCovED;
-  out(2, 2) = ubx.cov.data->posCovDD;
+void get_pos_cov(float out[3][3]) {
+  out[0][0] = ubx.cov.data->posCovNN;
+  out[0][1] = -ubx.cov.data->posCovNE;
+  out[0][2] = -ubx.cov.data->posCovND;
+  out[1][0] = -ubx.cov.data->posCovNE;
+  out[1][1] = ubx.cov.data->posCovEE;
+  out[1][2] = ubx.cov.data->posCovED;
+  out[2][0] = -ubx.cov.data->posCovND;
+  out[2][1] = ubx.cov.data->posCovED;
+  out[2][2] = ubx.cov.data->posCovDD;
 }
 
 void pump_events() {

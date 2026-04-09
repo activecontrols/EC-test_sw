@@ -12,7 +12,7 @@ Matrix9_9 FlightStateTransitionMat(Vector3 accel, Vector3 gyro, Matrix3_3 R_b2i)
   return F;
 }
 
-Vector19 FlightEstimator(Vector19 x_est, constantsASTRA_t constantsASTRA, Vector15 z, float dT, Matrix9_9 &P, bool new_gps_packet) {
+Vector19 FlightEstimator(Vector19 x_est, constantsASTRA_t constantsASTRA, Vector15 z, float dT, Matrix9_9 &P, bool new_gps_packet, Matrix3_3 gps_vel_covar, Matrix3_3 gps_pos_covar) {
   // M-EKF Implementation
   // Remove bias from IMU
   z.segment<3>(0) = z.segment<3>(0) - x_est.segment<3>(13);
@@ -58,10 +58,9 @@ Vector19 FlightEstimator(Vector19 x_est, constantsASTRA_t constantsASTRA, Vector
     H.block<3, 3>(0, 3) = Matrix3_3::Identity();
     H.block<3, 3>(3, 6) = Matrix3_3::Identity();
 
-    // Measurement Covariance Matrix
-    float gps_pos_covar = 0.2 * RTK + 10 * (1 - RTK);
-    float gps_vel_covar = 0.75;
-    Matrix6_6 R = (Vector6() << pow(gps_pos_covar, 2) * Vector3::Ones(), pow(gps_vel_covar, 2) * Vector3::Ones()).finished().asDiagonal();
+    Matrix6_6 R = Matrix6_6::Zero();
+    R.block<3, 3>(0, 0) = gps_pos_covar;
+    R.block<3, 3>(3, 3) = gps_vel_covar;
 
     // A priori covariance and Kalman gain
     Matrix9_6 L = P * H.transpose() * (H * P * H.transpose() + R).inverse();

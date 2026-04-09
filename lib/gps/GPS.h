@@ -1,6 +1,8 @@
 #pragma once
+
+// TODO - get rid of this dependency
 #include "UBX.h" // trajectorylogger needs access to UBX.h for pos and vel covariance struct
-#include "matlab_funcs.h"
+
 #include <Arduino.h>
 
 #define EARTH_RADIUS_M 6371001.0
@@ -58,8 +60,8 @@ GPS_Velocity get_velocity();
 void print_gps_pos();
 void print_rel_pos();
 
-void get_vel_cov(Matrix3_3 &out);
-void get_pos_cov(Matrix3_3 &out);
+void get_vel_cov(float out[3][3]);
+void get_pos_cov(float out[3][3]);
 
 bool is_vel_cov_valid();
 bool is_pos_cov_valid();

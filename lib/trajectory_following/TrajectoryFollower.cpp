@@ -100,6 +100,9 @@ void follow_trajectory() {
       Point gps_rel_pos = GPS::get_rel_xyz_pos();
       GPS_Velocity gps_vel = GPS::get_velocity();
 
+      GPS::get_pos_cov(ci.gps_pos_covar);
+      GPS::get_vel_cov(ci.gps_vel_covar);
+
       ci.accel_x = -imu_reading.acc[2];
       ci.accel_y = imu_reading.acc[1];
       ci.accel_z = imu_reading.acc[0];

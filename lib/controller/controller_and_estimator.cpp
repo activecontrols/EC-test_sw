@@ -88,10 +88,14 @@ Controller_Output get_controller_output(Controller_Input ci, float dT, Controlle
     ASTRAv2_Controller_reset(); // reset integral gains in the controller itself
   }
 
+  // TODO - check row major / column major
+  Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> gps_vel_covar((float *)ci.gps_vel_covar);
+  Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> gps_pos_covar((float *)ci.gps_pos_covar);
+
   if (ci.GND_val) {
-    x_est = GroundEstimator(x_est, constantsASTRA, z, dT, P, ci.new_imu_packet, ci.new_gps_packet);
+    x_est = GroundEstimator(x_est, constantsASTRA, z, dT, P, ci.new_imu_packet, ci.new_gps_packet, gps_vel_covar, gps_pos_covar);
   } else {
-    x_est = FlightEstimator(x_est, constantsASTRA, z, dT, Flight_P, ci.new_gps_packet);
+    x_est = FlightEstimator(x_est, constantsASTRA, z, dT, Flight_P, ci.new_gps_packet, gps_vel_covar, gps_pos_covar);
   }
 
   Vector16 X = StateAUG(x_est.segment<13>(0), z.segment<3>(3));
