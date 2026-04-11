@@ -69,7 +69,8 @@ static_assert(sizeof(GpsEntry) == 18 * 4, "sizeof(GpsEntry) error");
 
 namespace TrajectoryLogger {
 
-void log_trajectory_flash(float time, int phase, const Controller_Input ci, const Controller_Output co);
+void flash_log_sensor(float time, int phase, const Controller_Input ci, const Controller_Output co);
+
 void log_calib_flash();
 
 void log_x_est();
@@ -77,4 +78,6 @@ void log_x_est();
 void log_complete();
 
 void flash_dump_test();
+
+void log_trajectory();
 }; // namespace TrajectoryLogger

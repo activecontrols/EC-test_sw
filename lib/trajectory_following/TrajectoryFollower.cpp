@@ -17,6 +17,7 @@
 
 #define TELEMETRY_INTERVAL_US 100000
 #define COMMAND_INTERVAL_US 1000
+#define LOG_X_EST_INTERVAL_US 100000
 
 namespace TrajectoryFollower {
 
@@ -52,10 +53,12 @@ void follow_trajectory() {
   GPS::set_current_position_as_origin();
 
   TrajectoryLogger::log_calib_flash();
+  TrajectoryLogger::log_trajectory();
 
   elapsedMicros timer = elapsedMicros();
   unsigned long lasttelemetry = timer;
   unsigned long lastloop = timer;
+  unsigned long lastlogx_est = timer;
 
   float last_time_s = timer / 1000000.0;
   double mx, my, mz;
@@ -77,6 +80,7 @@ void follow_trajectory() {
         last_time_s = timer / 1000000.0;
         lasttelemetry = timer;
         lastloop = timer;
+        lastlogx_est = timer;
         counter = 0;
         GPS::set_current_position_as_origin();
 
@@ -158,7 +162,12 @@ void follow_trajectory() {
 
       if (flight_armed) // we only want to log flight data, not pre-flight
       {
-        TrajectoryLogger::log_trajectory_flash(time_s, i, ci, co);
+        TrajectoryLogger::flash_log_sensor(time_s, i, ci, co);
+
+        if (timer - lastlogx_est > LOG_X_EST_INTERVAL_US) {
+          TrajectoryLogger::log_x_est();
+          lastlogx_est = timer;
+        }
       }
 
       if (timer - lasttelemetry > TELEMETRY_INTERVAL_US) {

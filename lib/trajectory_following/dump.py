@@ -2,8 +2,8 @@ import serial
 import time
 
 # --- Configuration ---
-SERIAL_PORT = 'COM7'  # Change to /dev/ttyUSB0 or similar on Linux/Mac
-BAUD_RATE = 115200    # Ensure this matches your microcontroller settings
+SERIAL_PORT = 'COM12'  # Change to /dev/ttyUSB0 or similar on Linux/Mac
+BAUD_RATE = 57600    # Ensure this matches your microcontroller settings
 PAGE_SIZE = 256       # Adjust to match your PAGE_SIZE constant
 OUTPUT_FILE = "flash_dump.bin"
 
@@ -33,9 +33,25 @@ def main():
                 if len(page_data) < PAGE_SIZE:
                     print("\nWarning: Timeout or incomplete page received.")
                     break
+
+                cs_A_transmission = ser.read(1)[0]
+                cs_B_transmission = ser.read(1)[0]
+
+                cs_A = 0
+                cs_B = 0
+                for x in page_data:
+                    cs_A += x
+                    cs_A %= 256
+                    cs_B += cs_A
+                    cs_B %= 256
+
+                if cs_A_transmission != cs_A or cs_B_transmission != cs_B:
+                    print("Page Checksum Failed!")
+                    print(f"{cs_A} : {cs_A_transmission}")
+                    print(f"{cs_B} : {cs_B_transmission}")
                 
                 # Save data to file
-                f.write(page_data)
+                f.write(page_data[0:PAGE_SIZE])
                 total_bytes += len(page_data)
                 
                 # 3. Handle the 'c'/'k' handshake loop

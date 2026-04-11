@@ -1,4 +1,5 @@
 #include "TrajectoryLogger.h"
+#include "TrajectoryLoader.h"
 #include "FlashLogging.h"
 #include "GPS.h"
 #include "Router.h"
@@ -30,26 +31,21 @@ CString<400> telemCSV;
 //   }
 // }
 
-struct __packed EntryFlags {
-  // these are mutually exclusive except for imu and gps
-  // if there is both imu and gps packet, imu packet comes first
-  bool new_imu_packet : 1;
-  bool new_gps_packet : 1;
-  bool x_est : 1;
-  bool calib : 1;
-  bool controller_out : 1;
-  bool entry : 1;
-  bool flight_p : 1;
-};
+const uint8_t ENTRY_SENSOR = 0;
+const uint8_t ENTRY_GPS = 1;
+const uint8_t ENTRY_X_EST = 2;
+const uint8_t ENTRY_CALIB = 3;
+const uint8_t ENTRY_CONTROLLER_OUT = 4;
+const uint8_t ENTRY_LOOP_STATE = 5;
+const uint8_t ENTRY_FLIGHT_P = 6;
+const uint8_t ENTRY_TRAJECTORY = 7;
 
-static_assert(sizeof(EntryFlags) == 1, "sizeof(EntryFlags) error");
-
-struct __packed EntryBase {
+struct __packed LoopState {
   float time;
   uint8_t phase;
 };
 
-static_assert(sizeof(EntryBase) == 5, "sizeof(EntryBase) error");
+static_assert(sizeof(LoopState) == 5, "sizeof(LoopState) error");
 
 struct __packed SensorEntry {
 
@@ -94,12 +90,8 @@ struct __packed GpsEntry {
 
 static_assert(sizeof(GpsEntry) == 18 * 4, "sizeof(GpsEntry) error");
 
-void log_x_est() {
-  EntryFlags flags{};
-
-  flags.x_est = 1;
-
-  Logging::write((uint8_t *)&flags, sizeof(flags));
+void  log_x_est() {
+  Logging::write(ENTRY_X_EST);
 
   // log x_est
   Logging::write((uint8_t *)(ControllerAndEstimator::x_est.data()), sizeof(ControllerAndEstimator::x_est(0)) * (ControllerAndEstimator::x_est.size()));
@@ -107,35 +99,41 @@ void log_x_est() {
   return;
 }
 
+void log_trajectory() {
+  Logging::write(ENTRY_TRAJECTORY);
+
+  // next uint32_t specifies length in # of points
+  uint32_t len = TrajectoryLoader::header.num_points;
+
+  static_assert(sizeof(traj_point_pos) == 16, "sizeof(traj_point_pos) != 16");
+
+  Logging::write(len);
+
+  Logging::write((uint8_t*)(TrajectoryLoader::trajectory), sizeof(traj_point_pos) * len);
+  return;
+}
+
 void log_flight_p() {
-  EntryFlags flags{};
-
-  flags.flight_p = 1;
-
-  Logging::write((uint8_t *)&flags, sizeof(flags));
+  Logging::write(ENTRY_FLIGHT_P);
 
   Logging::write((uint8_t *)(ControllerAndEstimator::Flight_P.data()), sizeof(ControllerAndEstimator::Flight_P(0)) * (ControllerAndEstimator::Flight_P.size()));
 
   return;
 }
 
-void log_trajectory_flash(float time, int phase, Controller_Input ci, Controller_Output co) {
+void flash_log_sensor(float time, int phase, Controller_Input ci, Controller_Output co) {
 
-  EntryFlags flags{};
-  flags.new_gps_packet = ci.new_gps_packet;
-  flags.new_imu_packet = ci.new_imu_packet;
-  flags.controller_out = 1;
-  flags.entry = 1;
+  Logging::write(ENTRY_LOOP_STATE);
 
-  Logging::write((uint8_t *)&flags, sizeof(flags));
+  LoopState loopState{};
+  loopState.time = time;
+  loopState.phase = phase;
 
-  EntryBase entryBase{};
-  entryBase.time = time;
-  entryBase.phase = phase;
-
-  Logging::write((uint8_t *)&entryBase, sizeof(entryBase));
+  Logging::write((uint8_t *)&loopState, sizeof(loopState));
 
   if (ci.new_imu_packet) {
+    Logging::write(ENTRY_SENSOR);
+
     SensorEntry sensorData{};
     sensorData.accel_x = ci.accel_x;
     sensorData.accel_y = ci.accel_y;
@@ -151,6 +149,8 @@ void log_trajectory_flash(float time, int phase, Controller_Input ci, Controller
   }
 
   if (ci.new_gps_packet) {
+    Logging::write(ENTRY_GPS);
+
     GpsEntry gpsData{};
     gpsData.gps_pos_north = ci.gps_pos_north;
     gpsData.gps_pos_west = ci.gps_pos_west;
@@ -178,6 +178,8 @@ void log_trajectory_flash(float time, int phase, Controller_Input ci, Controller
   }
 
   static_assert(sizeof(co) == 16);
+
+  Logging::write(ENTRY_CONTROLLER_OUT);
   // log controller output
   Logging::write((uint8_t *)&co, sizeof(co));
 
@@ -186,12 +188,8 @@ void log_trajectory_flash(float time, int phase, Controller_Input ci, Controller
 
 // write IMU calib, MAG calib to flash
 void log_calib_flash() {
+  Logging::write(ENTRY_CALIB);
 
-  EntryFlags flags{};
-
-  flags.calib = 1;
-
-  Logging::write((uint8_t *)&flags, sizeof(flags));
   // some checks to make sure the compiler isn't adding weird padding
   static_assert(sizeof(IMU::Calib) == 8 * 9);
   static_assert(sizeof(Mag::calibration) == 12 * 8);
@@ -216,13 +214,13 @@ void flash_dump_test() {
   int idx = 0;
   while (1) {
     // wait for serial to send a c before sending the next page
-    while (!Serial.available()) {
+    while (!COMMS_SERIAL.available()) {
     }
 
     char c;
 
     do {
-      c = Serial.read();
+      c = COMMS_SERIAL.read();
     } while (!(c == 'k' || c == 'c'));
 
     if (c == 'k') {
@@ -231,22 +229,29 @@ void flash_dump_test() {
 
     Flash::read(addr, PAGE_SIZE, last_page);
 
-    Serial.write(last_page, sizeof(last_page));
+    COMMS_SERIAL.write(last_page, sizeof(last_page));
 
     bool end = true;
+
+    uint8_t cs_A = 0;
+    uint8_t cs_B = 0;
     for (int i = 0; i < sizeof(last_page); ++i) {
+      cs_A += last_page[i];
+      cs_B += cs_A;
       if (last_page[i] != 0xFF) {
         end = false;
-        break;
       }
     }
 
+    COMMS_SERIAL.write(cs_A);
+    COMMS_SERIAL.write(cs_B);
+
     if (end) {
-      Serial.write('k');
+      COMMS_SERIAL.write('k');
       break;
     }
 
-    Serial.write('c');
+    COMMS_SERIAL.write('c');
 
     idx %= PAGE_SIZE;
 
