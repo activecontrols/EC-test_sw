@@ -323,4 +323,4 @@
 #endif
 
 // Robert additions
-#define USE_PWR_EXTERNAL_SOURCE_SUPPLY
+#define USE_PWR_LDO_SUPPLY
