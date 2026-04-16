@@ -9,8 +9,6 @@
 
 namespace TrajectoryLogger {
 
-#define LOG_HEADER ("time,phase,north,west,up")
-
 void  log_x_est() {
   Logging::write(ENTRY_X_EST);
 

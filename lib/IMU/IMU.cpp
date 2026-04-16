@@ -285,19 +285,14 @@ void Sensor::read_latest_no_calib(Data *output) {
 // output in m/s^2 and rad/s
 void Sensor::read_latest(Data *output) {
 
-  // this->read_latest_no_calib(output);
+  this->read_latest_no_calib(output);
 
-  // // apply bias to both accelerometer and gyroscope data
-  // for (int i = 0; i < 3; ++i) {
-  //   output->acc[i] = (output->acc[i] - this->calib.accel_correction_bias[i]) / this->calib.accel_correction_gain[i] * G_TO_MS2;
-  // }
-  // for (int i = 0; i < 3; ++i) {
-  //   output->gyro[i] = (output->gyro[i] - this->calib.gyro_bias[i]) * DEG_TO_RAD;
-  // }
-
+  // apply bias to both accelerometer and gyroscope data
   for (int i = 0; i < 3; ++i) {
-    output->acc[i] = i;
-    output->gyro[i] = i;
+    output->acc[i] = (output->acc[i] - this->calib.accel_correction_bias[i]) / this->calib.accel_correction_gain[i] * G_TO_MS2;
+  }
+  for (int i = 0; i < 3; ++i) {
+    output->gyro[i] = (output->gyro[i] - this->calib.gyro_bias[i]) * DEG_TO_RAD;
   }
 
   return;

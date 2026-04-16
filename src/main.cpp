@@ -54,9 +54,9 @@ void setup() {
 
   CommandRouter::begin();
   Prop::begin();
-  // Mag::begin();
-  // GPS::begin();
-  // IMU::begin();
+  Mag::begin();
+  GPS::begin();
+  IMU::begin();
   GimbalServos::begin();
   TrajectoryLoader::begin();
   TrajectoryFollower::begin();

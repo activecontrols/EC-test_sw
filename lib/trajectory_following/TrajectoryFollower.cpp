@@ -44,7 +44,7 @@ void follow_trajectory() {
     CommsSerial.println("Waiting on mag...");
     delay(100);
   }
-  while (false) {
+  while (!GPS::has_valid_recent_pos()) {
     GPS::pump_events();
     CommsSerial.println("Waiting on gps...");
     delay(100);
