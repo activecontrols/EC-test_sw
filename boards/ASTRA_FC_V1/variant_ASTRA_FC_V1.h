@@ -240,10 +240,10 @@
 #define PIN_SPI_SS3 PNUM_NOT_DEFINED
 #endif
 #ifndef PIN_SPI_MOSI
-#define PIN_SPI_MOSI PC3_C
+#define PIN_SPI_MOSI PI3
 #endif
 #ifndef PIN_SPI_MISO
-#define PIN_SPI_MISO PC2_C
+#define PIN_SPI_MISO PI2
 #endif
 #ifndef PIN_SPI_SCK
 #define PIN_SPI_SCK PB10
