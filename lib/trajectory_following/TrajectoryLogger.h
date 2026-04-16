@@ -4,25 +4,22 @@
 #include <stdint.h>
 #include <sys/cdefs.h>
 
-struct __packed EntryFlags {
-  // these are mutually exclusive except for imu and gps
-  // if there is both imu and gps packet, imu packet comes first
-  bool new_imu_packet : 1;
-  bool new_gps_packet : 1;
-  bool controller_state : 1;
-  bool calib : 1;
-  bool controller_out : 1;
-  bool entry : 1;
-};
+const uint8_t ENTRY_SENSOR = 0;
+const uint8_t ENTRY_GPS = 1;
+const uint8_t ENTRY_X_EST = 2;
+const uint8_t ENTRY_CALIB = 3;
+const uint8_t ENTRY_CONTROLLER_OUT = 4;
+const uint8_t ENTRY_LOOP_STATE = 5;
+const uint8_t ENTRY_FLIGHT_P = 6;
+const uint8_t ENTRY_TRAJECTORY = 7;
 
-static_assert(sizeof(EntryFlags) == 1, "sizeof(EntryFlags) error");
 
-struct __packed EntryBase {
+struct __packed LoopState {
   float time;
   uint8_t phase;
 };
 
-static_assert(sizeof(EntryBase) == 5, "sizeof(EntryBase) error");
+static_assert(sizeof(LoopState) == 5, "sizeof(LoopState) error");
 
 struct __packed SensorEntry {
 
