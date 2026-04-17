@@ -149,6 +149,7 @@ void follow_trajectory() {
 
       float time_s = timer / 1000000.0;
       float dT = time_s - last_time_s;
+      dT = COMMAND_INTERVAL_US / 1000000.0; // TODO - temporarily hardcode dT
 
       Controller_Output co = ControllerAndEstimator::get_controller_output(ci, dT, &cs);
       float thrust_perc;
