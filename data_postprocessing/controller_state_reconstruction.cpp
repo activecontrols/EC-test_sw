@@ -6,133 +6,122 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// struct IMU_Calib {
+//   double gyro_bias[3];
+//   double accel_correction_bias[3];
+//   double accel_correction_gain[3];
+// };
+
+// struct MAG_Calib {
+//   double hard_x;
+//   double hard_y;
+//   double hard_z;
+//   double soft[9];
+// };
+
 flight_packet_t fp; // allows this to persist across calls
-
-traj_point_pos trajectory[3] = {{0, 0, 0, 0}, {60, 0, 0, 3}, {120, 0, 0, 0}}; // TODO - having this in the log file would be nice
-
-struct IMU_Calib {
-  double gyro_bias[3];
-  double accel_correction_bias[3];
-  double accel_correction_gain[3];
-};
-
-struct MAG_Calib {
-  double hard_x;
-  double hard_y;
-  double hard_z;
-  double soft[9];
-};
-
 float last_time;
+float this_time;
+Controller_Input ci;
+traj_point_pos *traj;
 
 bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
-  EntryFlags flags;
-  size_t did_read = fread(&flags, sizeof(EntryFlags), 1, compressed_bin);
-  if (did_read != sizeof(EntryFlags)) {
+  uint8_t entry_type;
+  size_t did_read = fread(&entry_type, sizeof(uint8_t), 1, compressed_bin);
+  if (did_read != sizeof(uint8_t)) {
     return false;
   }
 
   printf("Read log entry.");
-  if (flags.calib) {
-    IMU_Calib i_calib;
-    MAG_Calib m_calib;
-    fread(&i_calib, sizeof(IMU_Calib), 1, compressed_bin);
-    fread(&m_calib, sizeof(MAG_Calib), 1, compressed_bin);
-  }
-  if (flags.controller_state) { // TODO - this doesn't work right now
-    float controller_state[100];
-    fread(controller_state, sizeof(float), 100, compressed_bin);
-  }
 
-  // normal packet
-  if (flags.entry) {
-    Controller_Input ci;
+  fp.GND_flag = false;
+  fp.flight_armed = true;
+
+  switch (entry_type) {
+
+  ENTRY_TRAJECTORY:
+    uint32_t len;
+    fread(&len, sizeof(uint32_t), 1, compressed_bin);
+    traj = (traj_point_pos *)malloc(sizeof(traj_point_pos) * len);
+    fread(traj, sizeof(traj_point_pos), len, compressed_bin);
+    break;
+
+  ENTRY_LOOP_STATE:
+    LoopState ls;
+    fread(&ls, sizeof(LoopState), 1, compressed_bin);
+    this_time = ls.time;
+
+    // start the CI entry
     ci.GND_val = false;
-    fp.GND_flag = false;
-    fp.flight_armed = true;
-
-    // TODO - fill these
-    // fp.thrust_perc;
-    // fp.diffy_perc;
-    // fp.rtk_status;
-
-    EntryBase eb;
-    fread(&eb, sizeof(EntryBase), 1, compressed_bin);
-    float dT = eb.time - last_time;
-    last_time = eb.time;
-    fp.elapsed_time = eb.time;
-
-    ci.target_pos_north = trajectory[eb.phase].north;
-    ci.target_pos_west = trajectory[eb.phase].west;
-    ci.target_pos_up = trajectory[eb.phase].up;
+    ci.new_imu_packet = false;
+    ci.new_gps_packet = false;
+    ci.target_pos_north = traj[ls.phase].north;
+    ci.target_pos_west = traj[ls.phase].west;
+    ci.target_pos_up = traj[ls.phase].up;
     fp.target_pos_north = ci.target_pos_north;
     fp.target_pos_west = ci.target_pos_west;
     fp.target_pos_up = ci.target_pos_up;
+    break;
 
-    if (flags.new_imu_packet) { // TODO - make sure we are handling value persistence the correct way here and in the flight loop
-      SensorEntry se;
-      fread(&se, sizeof(SensorEntry), 1, compressed_bin);
+  ENTRY_SENSOR:
+    SensorEntry se;
+    fread(&se, sizeof(SensorEntry), 1, compressed_bin);
 
-      ci.new_imu_packet = true;
-      ci.accel_x = se.accel_x;
-      ci.accel_y = se.accel_y;
-      ci.accel_z = se.accel_z;
-      ci.gyro_yaw = se.gyro_yaw;
-      ci.gyro_pitch = se.gyro_pitch;
-      ci.gyro_roll = se.gyro_roll;
-      ci.mag_x = se.mag_x;
-      ci.mag_y = se.mag_y;
-      ci.mag_z = se.mag_z;
+    // TODO - ci should just use this struct
+    ci.new_imu_packet = true;
+    ci.accel_x = se.accel_x;
+    ci.accel_y = se.accel_y;
+    ci.accel_z = se.accel_z;
+    ci.gyro_yaw = se.gyro_yaw;
+    ci.gyro_pitch = se.gyro_pitch;
+    ci.gyro_roll = se.gyro_roll;
+    ci.mag_x = se.mag_x;
+    ci.mag_y = se.mag_y;
+    ci.mag_z = se.mag_z;
 
-      fp.accel_x = ci.accel_x;
-      fp.accel_y = ci.accel_y;
-      fp.accel_z = ci.accel_z;
-      fp.gyro_yaw = ci.gyro_yaw;
-      fp.gyro_pitch = ci.gyro_pitch;
-      fp.gyro_roll = ci.gyro_roll;
-      fp.mag_x = ci.mag_x;
-      fp.mag_y = ci.mag_y;
-      fp.mag_z = ci.mag_z;
-    } else {
-      ci.new_imu_packet = false;
-    }
+    // TODO - flight packet should just use these structs
+    fp.accel_x = ci.accel_x;
+    fp.accel_y = ci.accel_y;
+    fp.accel_z = ci.accel_z;
+    fp.gyro_yaw = ci.gyro_yaw;
+    fp.gyro_pitch = ci.gyro_pitch;
+    fp.gyro_roll = ci.gyro_roll;
+    fp.mag_x = ci.mag_x;
+    fp.mag_y = ci.mag_y;
+    fp.mag_z = ci.mag_z;
+    break;
 
-    if (flags.new_gps_packet) {
-      GpsEntry gps;
-      fread(&gps, sizeof(GpsEntry), 1, compressed_bin);
+  ENTRY_GPS:
+    GpsEntry gps;
+    fread(&gps, sizeof(GpsEntry), 1, compressed_bin);
 
-      ci.new_gps_packet = true;
-      ci.gps_pos_north = gps.gps_pos_north;
-      ci.gps_pos_west = gps.gps_pos_west;
-      ci.gps_pos_up = gps.gps_pos_up;
-      ci.gps_vel_north = gps.gps_vel_north;
-      ci.gps_vel_west = gps.gps_vel_west;
-      ci.gps_vel_up = gps.gps_vel_up;
+    ci.new_gps_packet = true;
+    ci.gps_pos_north = gps.gps_pos_north;
+    ci.gps_pos_west = gps.gps_pos_west;
+    ci.gps_pos_up = gps.gps_pos_up;
+    ci.gps_vel_north = gps.gps_vel_north;
+    ci.gps_vel_west = gps.gps_vel_west;
+    ci.gps_vel_up = gps.gps_vel_up;
 
-      fp.gps_pos_north = ci.gps_pos_north;
-      fp.gps_pos_west = ci.gps_pos_west;
-      fp.gps_pos_up = ci.gps_pos_up;
-      fp.gps_vel_north = ci.gps_vel_north;
-      fp.gps_vel_west = ci.gps_vel_west;
-      fp.gps_vel_up = ci.gps_vel_up;
-    } else {
-      ci.new_gps_packet = false;
-    }
+    // TODO - covariances
 
-    if (flags.controller_out) {
-      Controller_Output logged_co;
-      fread(&logged_co, sizeof(Controller_Output), 1, compressed_bin);
-      printf("%f %f %f %f - ", logged_co.thrust_N, logged_co.roll_rad_sec_squared, logged_co.gimbal_pitch_deg, logged_co.gimbal_yaw_deg);
+    fp.gps_pos_north = ci.gps_pos_north;
+    fp.gps_pos_west = ci.gps_pos_west;
+    fp.gps_pos_up = ci.gps_pos_up;
+    fp.gps_vel_north = ci.gps_vel_north;
+    fp.gps_vel_west = ci.gps_vel_west;
+    fp.gps_vel_up = ci.gps_vel_up;
+    break;
 
-      fp.gimbal_yaw_raw = logged_co.gimbal_yaw_deg;
-      fp.gimbal_pitch_raw = logged_co.gimbal_pitch_deg;
-      fp.thrust_N = logged_co.thrust_N;
-      fp.roll_rad_sec_squared = logged_co.roll_rad_sec_squared;
-    }
+  ENTRY_CONTROLLER_OUT:
+    Controller_Output logged_co;
+    fread(&logged_co, sizeof(Controller_Output), 1, compressed_bin);
 
     Controller_State cs;
+    float dT = this_time - last_time;
+    last_time = this_time;
+
     Controller_Output constructed_co = ControllerAndEstimator::get_controller_output(ci, dT, &cs);
-    printf("%f %f %f %f\n", constructed_co.thrust_N, constructed_co.roll_rad_sec_squared, constructed_co.gimbal_pitch_deg, constructed_co.gimbal_yaw_deg);
 
     fp.state_q_vec_new = cs.state_q_vec_new;
     fp.state_q_vec_0 = cs.state_q_vec_0;
@@ -155,6 +144,31 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
     fp.mag_bias_z = cs.mag_bias_z;
 
     fwrite(&fp, sizeof(fp), 1, reconstructed_bin);
+    break;
+
+    //   if (flags.controller_out) {
+    //   Controller_Output logged_co;
+    //   fread(&logged_co, sizeof(Controller_Output), 1, compressed_bin);
+    //   printf("%f %f %f %f - ", logged_co.thrust_N, logged_co.roll_rad_sec_squared, logged_co.gimbal_pitch_deg, logged_co.gimbal_yaw_deg);
+
+    //   fp.gimbal_yaw_raw = logged_co.gimbal_yaw_deg;
+    //   fp.gimbal_pitch_raw = logged_co.gimbal_pitch_deg;
+    //   fp.thrust_N = logged_co.thrust_N;
+    //   fp.roll_rad_sec_squared = logged_co.roll_rad_sec_squared;
+    // }
+
+    // Controller_State cs;
+    // Controller_Output constructed_co = ControllerAndEstimator::get_controller_output(ci, dT, &cs);
+    // printf("%f %f %f %f\n", constructed_co.thrust_N, constructed_co.roll_rad_sec_squared, constructed_co.gimbal_pitch_deg, constructed_co.gimbal_yaw_deg);
+
+  ENTRY_CALIB: // TODO - calibration
+    break;     // don't care about calibration for now
+
+  ENTRY_X_EST: // TODO - load x_est, check x_est
+    break;
+
+  ENTRY_FLIGHT_P: // TODO - flight P
+    break;
   }
 
   return true;
@@ -176,6 +190,7 @@ int main() {
 
   last_time = 0;
   ControllerAndEstimator::init_controller_and_estimator_constants();
+
   while (parse_log_entry(compressed_bin, reconstructed_bin)) {
   };
 
