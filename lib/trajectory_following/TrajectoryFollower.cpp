@@ -244,7 +244,7 @@ void follow_trajectory() {
   fp.flight_armed = false;
   CommandRouter::send_command("tr", fp);
 
-  CommsSerial.printf("Finished %ld loop iterations.", counter);
+  CommsSerial.printf("Finished %ld loop iterations.\n", counter);
 }
 
 // add relevant router cmds

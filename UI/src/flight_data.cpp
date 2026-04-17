@@ -170,7 +170,7 @@ void flight_data_periodic() {
           rtk_write_pos++;
           if (rtk_write_pos >= RTK_WRITE_SIZE - 1) {
             // escape newlines and backslashes
-            write_to_serial_port(&FlightDataState.fv_serial, &FlightDataState.fv_serial_port_open, "rtk:", 4, false);                   // send "rtk:" prefix
+            write_to_serial_port(&FlightDataState.fv_serial, &FlightDataState.fv_serial_port_open, "rtk ", 4, false);                   // send "rtk " cmd
             write_to_serial_port(&FlightDataState.fv_serial, &FlightDataState.fv_serial_port_open, rtk_write_buf, rtk_write_pos, true); // send data and newline suffix
             rtk_write_pos = 0;
           }

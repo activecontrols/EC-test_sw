@@ -25,7 +25,7 @@ void cmd_log_arm() {
   srand(millis());
   int key = rand() % (key_max - key_min) + key_min;
   CommsSerial.print("WARNING: Proceeding will permanently delete all data on the flash.\n");
-  CommsSerial.printf("Enter %d to proceed: ", key);
+  CommsSerial.printf("Enter %d to proceed: \n", key);
 
   char *res = CommsSerial.readline();
 

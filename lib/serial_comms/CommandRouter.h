@@ -27,6 +27,7 @@ template <typename S> void send_command(const char *command, S data) {
   uint8_t *data_raw = (uint8_t *)&data;
 
   CommsSerial.print(command);
+  CommsSerial.print(" ");
   for (int i = 0; i < sizeof(data); i++) {
     if (data_raw[i] == ESCAPE_CHAR || data_raw[i] == END_CHAR || data_raw[i] == CR_CHAR || data_raw[i] == BACKSPACE_CHAR) {
       CommsSerial.print(ESCAPE_CHAR);

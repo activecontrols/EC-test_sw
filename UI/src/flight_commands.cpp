@@ -15,7 +15,7 @@ void reset() {
 }
 
 void process_cmd(uint8_t *cmd_buf, int cmd_len) {
-  if (cmd_len == sizeof(active_packet) + 3 && cmd_buf[0] == 't' && cmd_buf[1] == 'r' && cmd_buf[2] == ':') { // "tr:***"
+  if (cmd_len == sizeof(active_packet) + 3 && cmd_buf[0] == 't' && cmd_buf[1] == 'r' && cmd_buf[2] == ' ') { // "tr:***"
     memcpy(&active_packet, &cmd_buf[3], sizeof(active_packet));
     commit_packet();
   } else {
