@@ -9,8 +9,8 @@
 #include "SPI.h"
 #include "TrajectoryFollower.h"
 #include "TrajectoryLoader.h"
-#include <Arduino.h>
 #include "TrajectoryLogger.h"
+#include <Arduino.h>
 
 CommsSerial_t<HardwareSerial> HW_CommsSerial(PIN_SERIAL_RX, PIN_SERIAL_TX);
 CommsSerial_t<USBSerial> USB_CommsSerial;
@@ -61,6 +61,7 @@ void setup() {
   TrajectoryLoader::begin();
   TrajectoryFollower::begin();
   Logging::begin();
+  TrajectoryLogger::begin();
 
   CommandRouter::add(ping, "ping"); // example registration
 }

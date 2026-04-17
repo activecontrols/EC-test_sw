@@ -13,7 +13,6 @@ const uint8_t ENTRY_LOOP_STATE = 5;
 const uint8_t ENTRY_FLIGHT_P = 6;
 const uint8_t ENTRY_TRAJECTORY = 7;
 
-
 struct __packed LoopState {
   float time;
   uint8_t phase;
@@ -74,7 +73,9 @@ void log_x_est();
 
 void log_complete();
 
-void flash_dump_test();
+void send_flash_over_serial();
 
 void log_trajectory();
+
+void begin();
 }; // namespace TrajectoryLogger

@@ -1,15 +1,16 @@
 #include "TrajectoryLogger.h"
-#include "TrajectoryLoader.h"
+#include "CommandRouter.h"
+#include "CommsSerial.h"
 #include "FlashLogging.h"
 #include "GPS.h"
 #include "SDCard.h"
-#include "CommsSerial.h"
+#include "TrajectoryLoader.h"
 
 #include "flash.h"
 
 namespace TrajectoryLogger {
 
-void  log_x_est() {
+void log_x_est() {
   Logging::write(ENTRY_X_EST);
 
   // log x_est
@@ -28,7 +29,7 @@ void log_trajectory() {
 
   Logging::write(len);
 
-  Logging::write((uint8_t*)(TrajectoryLoader::trajectory), sizeof(traj_point_pos) * len);
+  Logging::write((uint8_t *)(TrajectoryLoader::trajectory), sizeof(traj_point_pos) * len);
   return;
 }
 
@@ -127,7 +128,7 @@ void log_complete() {
   Logging::complete();
 }
 
-void flash_dump_test() {
+void send_flash_over_serial() {
   uint8_t last_page[PAGE_SIZE];
   uint32_t addr = 0;
   int idx = 0;
@@ -180,5 +181,8 @@ void flash_dump_test() {
   return;
 }
 
+void begin() {
+  CommandRouter::add(send_flash_over_serial, "dump_flash", "use this with traj_following/dump.py");
+}
 
 } // namespace TrajectoryLogger
