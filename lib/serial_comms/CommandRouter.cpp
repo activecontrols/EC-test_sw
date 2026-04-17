@@ -53,8 +53,9 @@ void call_cmd(uint8_t *buffer, size_t buffer_len) {
 void receive_byte(uint8_t c) {
   if (c == END_CHAR && !escaped) {             // true end
     command_buffer[command_buffer_pos] = '\0'; // null terminate to let us use string tools on this buffer
-    call_cmd(command_buffer, command_buffer_pos);
-    command_buffer_pos = 0;
+    int buf_len = command_buffer_pos;
+    command_buffer_pos = 0; // allows for nesting commands
+    call_cmd(command_buffer, buf_len);
   } else if (c == CR_CHAR && !escaped) { // true carriage return
     // do nothing - we aren't a typewriter, no need to carriage return
   } else if (c == BACKSPACE_CHAR && !escaped) { // true backspace
