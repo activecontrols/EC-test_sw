@@ -29,8 +29,8 @@ void ASTRAv2_Controller_reset() {
 
 Vector4 ASTRAv2_Controller(Vector3 PosTarget, Vector16 X, constantsASTRA_t constantsASTRA, float dT) {
   // Controller Limits
-  float thrustMax = 1.5 * 9.8; // N
-  float gimbalMax = M_PI / 18;
+  float thrustMax = 1.5 * 9.8;        // N
+  float gimbalMax = 7.0 * PI / 180.0; // rad
   Vector4 uMin = (Vector4() << -gimbalMax, -gimbalMax, 0.4 * thrustMax, -M_PI / 6).finished();
   Vector4 uMax = (Vector4() << gimbalMax, gimbalMax, thrustMax, M_PI / 6).finished();
   Vector4 U = Vector4::Zero();

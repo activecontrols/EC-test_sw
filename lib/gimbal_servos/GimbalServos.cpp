@@ -19,15 +19,14 @@ float linear_interpolation(float v, float min_in, float max_in, float min_out, f
 }
 
 int calc_servo_pulsewidth(float angle) {
-  return linear_interpolation(angle, -135, 135, MIN_SERVO_MICROS, MAX_SERVO_MICROS);
+  return linear_interpolation(angle, -90, 90, MIN_SERVO_MICROS, MAX_SERVO_MICROS);
 }
 
 void setGimbalAngle(float inner, float outer) {
-  float servo_inner_angle = inner + 16;
-  float servo_outer_angle = outer + 5;
+  float servo_inner_angle = inner - 11;
+  float servo_outer_angle = outer - 2;
 
-  // Router::printf("Outputted Inner Angle: %.2f\n", servo_inner_angle);
-  // Router::printf("Outputted Outer Angle: %.2f\n", servo_outer_angle);
+  
 
   inner_servo.writeMicroseconds(calc_servo_pulsewidth(servo_inner_angle));
   outer_servo.writeMicroseconds(calc_servo_pulsewidth(servo_outer_angle));
@@ -40,7 +39,7 @@ void centerGimbal() {
 void setGimbalAngleCmd(const char *args) {
   double inner_angle;
   double outer_angle;
-  if (sscanf(args, "%ld %ld", &inner_angle, &outer_angle) != 2) {
+  if (sscanf(args, "%lf %lf", &inner_angle, &outer_angle) != 2) {
     CommsSerial.printf("Usage: gimbal_set_angle_inout 0.00 0.00\n");
     return;
   }
