@@ -44,6 +44,7 @@ Vector19 FlightEstimator(Vector19 x_est, constantsASTRA_t constantsASTRA, Vector
 Vector16 StateAUG(Vector13 XKF, Vector3 G);
 Vector4 DCM_Quat_Conversion(Matrix3_3 R);
 Vector9 DigitalNF(Vector9 IN, bool GND, float THRUST, float dT, Matrix9_4 &X, Matrix9_4 &Y);
+Matrix18_18 Q_gen();
 void ASTRAv2_Controller_reset();
 Vector4 ASTRAv2_Controller(Vector3 PosTarget, Vector16 X, constantsASTRA_t constantsASTRA, float dT);
 
