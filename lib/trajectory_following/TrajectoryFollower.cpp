@@ -148,10 +148,10 @@ void follow_trajectory() {
       ci.GND_val = !has_left_ground;
 
       float time_s = timer / 1000000.0;
-      float dT = time_s - last_time_s;
-      dT = COMMAND_INTERVAL_US / 1000000.0; // TODO - temporarily hardcode dT
+      float loop_dT = time_s - last_time_s;
+      float ideal_dT = COMMAND_INTERVAL_US / 1000000.0;
 
-      Controller_Output co = ControllerAndEstimator::get_controller_output(ci, dT, &cs);
+      Controller_Output co = ControllerAndEstimator::get_controller_output(ci, ideal_dT, loop_dT, &cs);
       float thrust_perc;
       float diffy_perc;
       Prop::get_prop_perc(co.thrust_N, co.roll_rad_sec_squared, &thrust_perc, &diffy_perc);

@@ -23,7 +23,7 @@ void init_controller_and_estimator_constants() {
       -9.959333e-17, 7.261800e-16, 4.035990e+00, -9.370403e-17, 2.685714e-17, 2.059154e+00, 7.242069e-16, 2.974059e-16, -1.581139e+00;                      //
 
   constantsASTRA.R = Matrix6_6::Zero();
-  constantsASTRA.R.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.100;
+  constantsASTRA.R.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.020;
   constantsASTRA.R.block<3, 3>(3, 3) = Matrix3_3::Identity() * 0.100;
 
   constantsASTRA.K_Att << 8.722500e-01, -1.643694e-16, -8.894669e-16, 1.345039e-01, 7.189700e-19, -7.736332e-17, -4.787136e-01, 3.300943e-16, 4.539530e-16, //
@@ -31,10 +31,10 @@ void init_controller_and_estimator_constants() {
       -9.959333e-17, 7.261800e-16, 4.035990e+00, -9.370403e-17, 2.685714e-17, 2.059154e+00, 7.242069e-16, 2.974059e-16, -1.581139e+00;                      //               //
 
   P = Matrix18_18::Identity();
-  P.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.5;
+  P.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.05;
   P.block<3, 3>(9, 9) = Matrix3_3::Identity() * 0.03;
-  P.block<3, 3>(12, 12) = Matrix3_3::Identity() * 0.25;
-  P.block<3, 3>(15, 15) = Matrix3_3::Identity() * 0.1;
+  P.block<3, 3>(12, 12) = Matrix3_3::Identity() * 0.05;
+  P.block<3, 3>(15, 15) = Matrix3_3::Identity() * 0.01;
 
   x_est = Vector19::Zero();
   x_est[0] = 1;
@@ -47,7 +47,7 @@ void init_controller_and_estimator_constants() {
   ASTRAv2_Controller_reset();
 }
 
-Controller_Output get_controller_output(Controller_Input ci, float dT, Controller_State *cs) {
+Controller_Output get_controller_output(Controller_Input ci, float ideal_dT, float loop_dT, Controller_State *cs) {
 
   Vector15 z;
   // clang-format off
@@ -62,7 +62,7 @@ Controller_Output get_controller_output(Controller_Input ci, float dT, Controlle
   if (last_thrust < 1) { // prevent div by 0 in filter
     last_thrust = 9.8;
   }
-  Vector9 filt_imu = DigitalNF(imu, ci.GND_val, last_thrust, dT, dnf_X, dnf_Y);
+  Vector9 filt_imu = DigitalNF(imu, ci.GND_val, last_thrust, ideal_dT, dnf_X, dnf_Y);
   z.segment<9>(0) = filt_imu;
 
   for (int i = 0; i < 9; i++) {
@@ -79,15 +79,15 @@ Controller_Output get_controller_output(Controller_Input ci, float dT, Controlle
   Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> gps_pos_covar((float *)ci.gps_pos_covar);
 
   if (ci.GND_val) {
-    x_est = GroundEstimator(x_est, constantsASTRA, z, dT, P, ci.new_imu_packet, ci.new_gps_packet, gps_vel_covar, gps_pos_covar);
+    x_est = GroundEstimator(x_est, constantsASTRA, z, loop_dT, P, ci.new_imu_packet, ci.new_gps_packet, gps_vel_covar, gps_pos_covar);
   } else {
-    x_est = FlightEstimator(x_est, constantsASTRA, z, dT, Flight_P, ci.new_gps_packet, gps_vel_covar, gps_pos_covar);
+    x_est = FlightEstimator(x_est, constantsASTRA, z, loop_dT, Flight_P, ci.new_gps_packet, gps_vel_covar, gps_pos_covar);
   }
 
   Vector16 X = StateAUG(x_est.segment<13>(0), z.segment<3>(3));
   Vector3 TargetPos;
   TargetPos << ci.target_pos_north, ci.target_pos_west, ci.target_pos_up;
-  Vector4 raw_co = ASTRAv2_Controller(TargetPos, X, constantsASTRA, dT);
+  Vector4 raw_co = ASTRAv2_Controller(TargetPos, X, constantsASTRA, loop_dT);
   if (ci.GND_val) {
     raw_co = Vector4::Zero();
   }

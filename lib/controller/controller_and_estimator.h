@@ -69,5 +69,5 @@ extern Matrix9_9 Flight_P;
 extern Vector19 x_est;
 
 void init_controller_and_estimator_constants();
-Controller_Output get_controller_output(Controller_Input ci, float dT, Controller_State *cs);
+Controller_Output get_controller_output(Controller_Input ci, float ideal_dT, float loop_dT, Controller_State *cs);
 }; // namespace ControllerAndEstimator
