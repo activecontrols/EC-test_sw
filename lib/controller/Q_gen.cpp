@@ -1,12 +1,12 @@
 #include "matlab_funcs.h"
 
 Matrix18_18 Q_gen() {
-  float gyro_cov = 5e-6;
-  float gyro_bias_cov = 1e-8;
-  float accel_proc_cov = 1e-2;
-  float accel_bias_cov = 1e-12;
+  float gyro_cov = 1e-5;
+  float gyro_bias_cov = 1e-11;
+  float accel_proc_cov = 5e-4;
+  float accel_bias_cov = 1e-13;
   float mag_proc_cov = 1e-1;
-  float mag_bias_cov = 1e-12; // * 3000;
+  float mag_bias_cov = 1e-15; // * 3000;
 
   // Init constants
   float dt = 0.001;
