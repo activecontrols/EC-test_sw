@@ -59,6 +59,9 @@ Controller_Output get_controller_output(Controller_Input ci, float dT, Controlle
   // clang-format on
 
   Vector9 imu = z.segment<9>(0);
+  if (last_thrust < 1) { // prevent div by 0 in filter
+    last_thrust = 9.8;
+  }
   Vector9 filt_imu = DigitalNF(imu, ci.GND_val, last_thrust, dT, dnf_X, dnf_Y);
   z.segment<9>(0) = filt_imu;
 
