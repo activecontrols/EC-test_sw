@@ -119,7 +119,7 @@ void gps_pos_panel() {
   centered_text("GPS Position");
   if (ImPlot::BeginPlot("##GPS Position", ImVec2(-1, 200), ImPlotFlags_NoLegend)) {
     ImPlot::SetupAxes("East (m)", "North (m)");
-    ImPlot::SetupAxesLimits(-5, 5, -5, 5);
+    ImPlot::SetupAxesLimits(-2, 2, -1, 1);
     ImPlot::PlotScatter("State", &state_x, &state_y, 1);
     ImPlot::PlotScatter("Target", &target_x, &target_y, 1);
 
@@ -192,8 +192,8 @@ void estimated_pos_panel() {
 
     ImPlot3D::SetupAxes("East (m)", "North (m)", "Up (m)");
     ImPlot3D::SetupAxisLimits(ImAxis3D_Z, 0, 5);
-    ImPlot3D::SetupAxisLimits(ImAxis3D_X, -5, 5);
-    ImPlot3D::SetupAxisLimits(ImAxis3D_Y, -5, 5);
+    ImPlot3D::SetupAxisLimits(ImAxis3D_X, -1, 1);
+    ImPlot3D::SetupAxisLimits(ImAxis3D_Y, -1, 1);
 
     ImPlot3DSpec marker_spec;
     marker_spec.Marker = ImPlot3DMarker_Circle;
