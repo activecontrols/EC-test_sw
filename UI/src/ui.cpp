@@ -122,6 +122,22 @@ void gps_pos_panel() {
     ImPlot::SetupAxesLimits(-5, 5, -5, 5);
     ImPlot::PlotScatter("State", &state_x, &state_y, 1);
     ImPlot::PlotScatter("Target", &target_x, &target_y, 1);
+
+    const int N = 64;
+    double xs[N];
+    double ys[N];
+
+    double r = FlightHistory.gps_hor_prec;
+
+    for (int i = 0; i < N; ++i) {
+      double theta = 2.0 * 3.1415 * i / (N - 1);
+      xs[i] = state_x + r * cos(theta);
+      ys[i] = state_y + r * sin(theta);
+    }
+    ImPlotSpec spec;
+    spec.LineColor = ImPlot3D::GetColormapColor(0, ImPlot3DColormap_Deep);
+    ImPlot::PlotLine("##Accuracy", xs, ys, N, spec);
+
     ImPlot::EndPlot();
   }
 
