@@ -125,27 +125,26 @@ void follow_trajectory() {
       ci.gps_vel_west = gps_vel.west;
       ci.gps_vel_up = gps_vel.up;
 
-      // GPS lock
-      // ci.gps_pos_north = 0;
-      // ci.gps_pos_west = 0;
-      // ci.gps_pos_up = 0;
-      // ci.gps_vel_north = 0;
-      // ci.gps_vel_west = 0;
-      // ci.gps_vel_up = 0;
-      // ci.new_gps_packet = true;
-
       ci.target_pos_north = TrajectoryLoader::trajectory[i].north;
       ci.target_pos_west = TrajectoryLoader::trajectory[i].west;
       ci.target_pos_up = TrajectoryLoader::trajectory[i].up;
 
-      if (gps_rel_pos.north != last_gps_pos.north || gps_rel_pos.west != last_gps_pos.west || gps_rel_pos.up != last_gps_pos.up) {
+      ci.GND_val = !has_left_ground;
+
+      if (ci.GND_val) { // GPS lock
+        ci.gps_pos_north = 0;
+        ci.gps_pos_west = 0;
+        ci.gps_pos_up = 0;
+        ci.gps_vel_north = 0;
+        ci.gps_vel_west = 0;
+        ci.gps_vel_up = 0;
+        ci.new_gps_packet = true;
+      } else if (gps_rel_pos.north != last_gps_pos.north || gps_rel_pos.west != last_gps_pos.west || gps_rel_pos.up != last_gps_pos.up) {
         ci.new_gps_packet = true;
         last_gps_pos = gps_rel_pos;
       } else {
         ci.new_gps_packet = false;
       }
-
-      ci.GND_val = !has_left_ground;
 
       float time_s = timer / 1000000.0;
       float loop_dT = time_s - last_time_s;
