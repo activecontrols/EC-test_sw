@@ -2,7 +2,7 @@
 
 namespace GimbalServos {
 void centerGimbal();
-void setGimbalAngle(float bottom, float top);
+void setGimbalAngle(float inner, float outer);
 void begin();
 
 } // namespace GimbalServos
