@@ -173,7 +173,6 @@ void get_gps_precision(float *hor, float *ver) {
 void pump_events() {
   while (gps_uart.available() > 0) { // https://github.com/mikalhart/TinyGPSPlus/blob/master/examples/DeviceExample/DeviceExample.ino
     char c = gps_uart.read();
-    gps_uart.println();
     ubx.encode(c);
 
 #ifdef DEBUG_GPS_MSG
