@@ -164,6 +164,12 @@ void get_pos_cov(float out[3][3]) {
   out[2][2] = ubx.cov.data->posCovDD;
 }
 
+// returns in meters
+void get_gps_precision(float *hor, float *ver) {
+  *hor = ubx.pvt_solution.data->hAcc / 1000.0;
+  *ver = ubx.pvt_solution.data->vAcc / 1000.0;
+}
+
 void pump_events() {
   while (gps_uart.available() > 0) { // https://github.com/mikalhart/TinyGPSPlus/blob/master/examples/DeviceExample/DeviceExample.ino
     char c = gps_uart.read();

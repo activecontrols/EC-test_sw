@@ -94,6 +94,8 @@ void commit_packet() {
   FlightHistory.thrust_perc = active_packet.thrust_perc;
   FlightHistory.diffy_perc = active_packet.diffy_perc;
   FlightHistory.rtk_status = active_packet.rtk_status;
+  FlightHistory.gps_hor_prec = active_packet.gps_hor_prec;
+  FlightHistory.gps_ver_prec = active_packet.gps_ver_prec;
 
   FlightHistory.write_pos += 1;
   FlightHistory.write_pos %= FLIGHT_HISTORY_LENGTH;

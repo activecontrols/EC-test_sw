@@ -53,4 +53,6 @@ struct flight_packet_t {
   float thrust_perc;
   float diffy_perc;
   int rtk_status;
+  float gps_hor_prec;
+  float gps_ver_prec;
 };

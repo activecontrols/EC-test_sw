@@ -247,6 +247,9 @@ void controller_output_panel() {
     colored_flag(" RTK FIX", 0, ImVec4(204.0 / 255.0, 0.0f, 0.0f, 1.0f), ImVec4(0.0f, 153.0 / 255.0, 0.0f, 1.0f), "##rtk_flag");
   }
 
+  ImGui::Text("GPS Horizontal Position: %5.2f cm", FlightHistory.gps_hor_prec * 100);
+  ImGui::Text("GPS Vertical Precision: %5.2f cm", FlightHistory.gps_ver_prec * 100);
+
   ImGui::End();
 }
 
