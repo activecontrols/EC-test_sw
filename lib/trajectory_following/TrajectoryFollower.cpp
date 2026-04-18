@@ -61,7 +61,7 @@ void follow_trajectory() {
   unsigned long lastlogx_est = timer;
 
   float last_time_s = timer / 1000000.0;
-  double mx, my, mz;
+  float mx, my, mz;
 
   for (int i = 0; i < TrajectoryLoader::header.num_points; i++) {
     while (last_time_s < TrajectoryLoader::trajectory[i].time || !flight_armed) {
@@ -96,7 +96,7 @@ void follow_trajectory() {
 
       if (Mag::isMeasurementReady()) {
         ci.new_imu_packet = true;
-        Mag::read_xyz_normalized(mx, my, mz);
+        Mag::read_xyz_calibrated(mx, my, mz);
         Mag::beginMeasurement();
       } else {
         ci.new_imu_packet = false;

@@ -112,7 +112,7 @@ void log_calib_flash() {
 
   // some checks to make sure the compiler isn't adding weird padding
   static_assert(sizeof(IMU::Calib) == 8 * 9);
-  static_assert(sizeof(Mag::calibration) == 12 * 8);
+  static_assert(sizeof(Mag::calibration) == 12 * 4);
   static_assert(IMU_COUNT == 1);
 
   // write imu calibration to flash (we are only using IMU 0 for now)
