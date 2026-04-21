@@ -155,7 +155,7 @@ bool is_armed() {
 void cmd_set_both(const char *args) {
   double prop1;
   double prop2;
-  if (sscanf(args, "%ld %ld", &prop1, &prop2) != 2) {
+  if (sscanf(args, "%lf %lf", &prop1, &prop2) != 2) {
     CommsSerial.println("Usage: prop_set_both <prop1 %> <prop2 %>");
     return;
   }
@@ -167,8 +167,8 @@ void cmd_set_both(const char *args) {
 void cmd_set(const char *args) {
   double overall;
   double differential;
-  if (sscanf(args, "%ld %ld", &overall, &differential) != 2) {
-    if (sscanf(args, "%ld", &overall) != 1) {
+  if (sscanf(args, "%lf %lf", &overall, &differential) != 2) {
+    if (sscanf(args, "%lf", &overall) != 1) {
       CommsSerial.println("Usage: prop_set <throttle %> [<roll %>]");
       return;
     }
