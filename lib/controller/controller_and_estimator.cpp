@@ -6,11 +6,12 @@ constantsASTRA_t constantsASTRA;
 Matrix18_18 P;
 Matrix9_9 Flight_P;
 Vector19 x_est;
-Vector3 lastEMA;
+Vector2 lastEMA;
 Matrix9_4 dnf_X;
 Matrix9_4 dnf_Y;
 float last_thrust;
 bool last_GND;
+const float tau = 0.04; // seconds - time constant for ema low pass filter applied to gimbal angles
 
 void init_controller_and_estimator_constants() {
   constantsASTRA.g = 9.8015;
@@ -38,7 +39,7 @@ void init_controller_and_estimator_constants() {
 
   x_est = Vector19::Zero();
   x_est[0] = 1;
-  lastEMA = Vector3::Zero();
+  lastEMA = Vector2::Zero();
   dnf_X = Matrix9_4::Ones();
   dnf_Y = Matrix9_4::Ones();
   last_thrust = 0;
@@ -94,9 +95,19 @@ Controller_Output get_controller_output(Controller_Input ci, float ideal_dT, flo
   last_thrust = raw_co(2);
   last_GND = ci.GND_val;
 
+  float co_gimbal_yaw = raw_co(0) * 180 / M_PI;
+  float co_gimbal_pitch = raw_co(1) * 180 / M_PI;
+
+  float ALPHA = ideal_dT / tau;
+  float new_gimbal_yaw = ALPHA * co_gimbal_yaw + (1.0f - ALPHA) * lastEMA(0);
+  float new_gimbal_pitch = ALPHA * co_gimbal_pitch + (1.0f - ALPHA) * lastEMA(1);
+
+  lastEMA(0) = new_gimbal_yaw;
+  lastEMA(1) = new_gimbal_pitch;
+
   Controller_Output co;
-  co.gimbal_yaw_deg = raw_co(0) * 180 / M_PI;
-  co.gimbal_pitch_deg = raw_co(1) * 180 / M_PI;
+  co.gimbal_yaw_deg = new_gimbal_yaw;
+  co.gimbal_pitch_deg = new_gimbal_pitch;
   co.thrust_N = raw_co(2);
   co.roll_rad_sec_squared = raw_co(3);
 

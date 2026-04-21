@@ -4,6 +4,7 @@
 // Note - using matlab funcs based off of ASTRA simulation: 3a2af9e756f0981da411d93f59ee6b421d5fa234
 // TODO - update matlab func commit
 
+using Vector2 = Eigen::Matrix<float, 2, 1>;
 using Vector3 = Eigen::Matrix<float, 3, 1>;
 using Vector4 = Eigen::Matrix<float, 4, 1>;
 using Vector6 = Eigen::Matrix<float, 6, 1>;
