@@ -11,7 +11,7 @@ Matrix9_4 dnf_X;
 Matrix9_4 dnf_Y;
 float last_thrust;
 bool last_GND;
-const float tau = 0.04; // seconds - time constant for ema low pass filter applied to gimbal angles
+const float tau = 0.06; // seconds - time constant for ema low pass filter applied to gimbal angles
 
 void init_controller_and_estimator_constants() {
   constantsASTRA.g = 9.8015;

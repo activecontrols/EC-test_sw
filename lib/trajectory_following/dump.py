@@ -2,7 +2,7 @@ import serial
 import time
 
 # --- Configuration ---
-SERIAL_PORT = 'COM12'  # Change to /dev/ttyUSB0 or similar on Linux/Mac
+SERIAL_PORT = 'COM15'  # Change to /dev/ttyUSB0 or similar on Linux/Mac
 BAUD_RATE = 57600    # Ensure this matches your microcontroller settings
 PAGE_SIZE = 256       # Adjust to match your PAGE_SIZE constant
 OUTPUT_FILE = "flash_dump.bin"
@@ -11,12 +11,12 @@ def main():
     try:
         # Initialize serial connection
         # timeout=1 ensures we don't hang forever if the MCU stops responding
-        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=5)
         time.sleep(2) # Wait for MCU to reset after connection
         
         print(f"Connected to {SERIAL_PORT}. Starting dump...")
 
-        ser.write(b'flash_dump_test\n')
+        ser.write(b'dump_flash\n')
         
         with open(OUTPUT_FILE, "wb") as f:
             total_bytes = 0
