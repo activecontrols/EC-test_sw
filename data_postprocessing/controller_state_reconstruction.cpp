@@ -32,7 +32,7 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
     return false;
   }
 
-  printf("Read log entry.");
+  printf("Read log entry.\n");
 
   fp.GND_flag = false;
   fp.flight_armed = true;
@@ -117,11 +117,18 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
     Controller_Output logged_co;
     fread(&logged_co, sizeof(Controller_Output), 1, compressed_bin);
 
-    Controller_State cs;
-    float dT = this_time - last_time;
-    last_time = this_time;
+    fp.gimbal_yaw_raw = logged_co.gimbal_yaw_deg;
+    fp.gimbal_pitch_raw = logged_co.gimbal_pitch_deg;
+    fp.thrust_N = logged_co.thrust_N;
+    fp.roll_rad_sec_squared = logged_co.roll_rad_sec_squared;
 
-    Controller_Output constructed_co = ControllerAndEstimator::get_controller_output(ci, dT, &cs);
+    Controller_State cs;
+    float loop_dT = this_time - last_time;
+    last_time = this_time;
+    float ideal_dT = 1 / 1000.0;
+
+    Controller_Output constructed_co = ControllerAndEstimator::get_controller_output(ci, ideal_dT, loop_dT, &cs);
+    // TODO - check constructed_co against real data
 
     fp.state_q_vec_new = cs.state_q_vec_new;
     fp.state_q_vec_0 = cs.state_q_vec_0;
@@ -146,28 +153,15 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
     fwrite(&fp, sizeof(fp), 1, reconstructed_bin);
     break;
 
-    //   if (flags.controller_out) {
-    //   Controller_Output logged_co;
-    //   fread(&logged_co, sizeof(Controller_Output), 1, compressed_bin);
-    //   printf("%f %f %f %f - ", logged_co.thrust_N, logged_co.roll_rad_sec_squared, logged_co.gimbal_pitch_deg, logged_co.gimbal_yaw_deg);
-
-    //   fp.gimbal_yaw_raw = logged_co.gimbal_yaw_deg;
-    //   fp.gimbal_pitch_raw = logged_co.gimbal_pitch_deg;
-    //   fp.thrust_N = logged_co.thrust_N;
-    //   fp.roll_rad_sec_squared = logged_co.roll_rad_sec_squared;
-    // }
-
-    // Controller_State cs;
-    // Controller_Output constructed_co = ControllerAndEstimator::get_controller_output(ci, dT, &cs);
-    // printf("%f %f %f %f\n", constructed_co.thrust_N, constructed_co.roll_rad_sec_squared, constructed_co.gimbal_pitch_deg, constructed_co.gimbal_yaw_deg);
-
   ENTRY_CALIB: // TODO - calibration
     break;     // don't care about calibration for now
 
-  ENTRY_X_EST: // TODO - load x_est, check x_est
+  ENTRY_X_EST: // TODO - check x_est for drift
+    fread((uint8_t *)(ControllerAndEstimator::x_est.data()), sizeof(ControllerAndEstimator::x_est(0)), ControllerAndEstimator::x_est.size(), compressed_bin);
     break;
 
-  ENTRY_FLIGHT_P: // TODO - flight P
+  ENTRY_FLIGHT_P:
+    fread((uint8_t *)(ControllerAndEstimator::Flight_P.data()), sizeof(ControllerAndEstimator::Flight_P(0)), ControllerAndEstimator::Flight_P.size(), compressed_bin);
     break;
   }
 
