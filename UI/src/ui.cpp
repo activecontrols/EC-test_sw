@@ -278,7 +278,7 @@ void gimbal_output_panel() {
   centered_text("Gimbal Command");
   if (ImPlot::BeginPlot("##Gimbal Command", ImVec2(-1, 250), ImPlotFlags_NoLegend)) {
     ImPlot::SetupAxes("Yaw (deg)", "Pitch (deg)");
-    ImPlot::SetupAxesLimits(-20, 20, -20, 20, ImPlotCond_Always);
+    ImPlot::SetupAxesLimits(-10, 10, -10, 10, ImPlotCond_Always);
     ImPlot::PlotScatter("##Gimbal", &x, &y, 1);
     ImPlot::EndPlot();
   }

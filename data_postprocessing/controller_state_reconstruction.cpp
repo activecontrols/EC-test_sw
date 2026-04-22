@@ -136,6 +136,9 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
     Controller_Output constructed_co = ControllerAndEstimator::get_controller_output(ci, ideal_dT, loop_dT, &cs);
     // TODO - check constructed_co against real data
 
+    // printf("Logged co: %f %f %f %f\n", logged_co.gimbal_pitch_deg, logged_co.gimbal_yaw_deg, logged_co.thrust_N, logged_co.roll_rad_sec_squared);
+    // printf("Constructed co: %f %f %f %f\n", constructed_co.gimbal_pitch_deg, constructed_co.gimbal_yaw_deg, constructed_co.thrust_N, constructed_co.roll_rad_sec_squared);
+
     fp.state_q_vec_new = cs.state_q_vec_new;
     fp.state_q_vec_0 = cs.state_q_vec_0;
     fp.state_q_vec_1 = cs.state_q_vec_1;
@@ -176,6 +179,10 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
     break;
   }
 
+  case 0xFF: {
+    return false; // end of log reached
+  }
+
   default: {
     printf("Error - invalid entry type.\n");
     break;
@@ -203,7 +210,7 @@ int main() {
   ControllerAndEstimator::init_controller_and_estimator_constants();
 
   while (parse_log_entry(compressed_bin, reconstructed_bin)) {
-    };
+  };
 
   printf("Finished reading log.");
   fclose(compressed_bin);
