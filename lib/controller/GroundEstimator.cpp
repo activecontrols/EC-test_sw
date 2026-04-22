@@ -56,7 +56,7 @@ Vector19 GroundEstimator(Vector19 x_est, constantsASTRA_t constantsASTRA, Vector
   // Process Noise Covariance and a-priori propagation step
   // Q = 0.5 * Q;
   Matrix3_3 mag_matrix = (Matrix3_3::Identity() - z.segment<3>(6) * z.segment<3>(6).transpose()) / mag_norm;
-  R.block<3, 3>(3, 3) = 2e-1 * mag_matrix + 1e-4 * z.segment<3>(6) * z.segment<3>(6).transpose();
+  R.block<3, 3>(3, 3) = 4e-1 * mag_matrix + 5e-5 * z.segment<3>(6) * z.segment<3>(6).transpose();
   P = Phi * P * Phi.transpose() + Q;
   P = (P + P.transpose()) / 2;
 
@@ -71,7 +71,7 @@ Vector19 GroundEstimator(Vector19 x_est, constantsASTRA_t constantsASTRA, Vector
 
     // A priori covariance and Kalman gain
     Matrix18_6 L = P * H.transpose() * (H * P * H.transpose() + R).inverse();
-    // L.block<3, 6>(15, 0) = Matrix3_6::Zero();
+    L.block<1, 6>(14, 0) = Vector6::Zero().transpose();
 
     // Predicted measurements
     Vector6 z_hat = (Vector6() << R_b2i.transpose() * (Vector3() << 0, 0, constantsASTRA.g).finished(), R_b2i.transpose() * constantsASTRA.mag).finished();
@@ -92,12 +92,12 @@ Vector19 GroundEstimator(Vector19 x_est, constantsASTRA_t constantsASTRA, Vector
     H.block<3, 3>(3, 6) = Matrix3_3::Identity();
 
     Matrix6_6 R = Matrix6_6::Zero();
-    R.block<3, 3>(0, 0) = 0.1 * Matrix3_3::Identity();
-    R.block<3, 3>(3, 3) = 0.1 * Matrix3_3::Identity();
+    R.block<3, 3>(0, 0) = 0.05 * Matrix3_3::Identity();
+    R.block<3, 3>(3, 3) = 0.05 * Matrix3_3::Identity();
 
     // A priori covariance and Kalman gain
     Matrix18_6 L = P * H.transpose() * (H * P * H.transpose() + R).inverse();
-    // L.block<3, 6>(15, 0) = Matrix3_6::Zero();
+    L.block<1, 6>(14, 0) = Vector6::Zero().transpose();
 
     // Predicted measurements
     Vector6 z_hat = (Vector6() << x_est.segment<3>(4), x_est.segment<3>(7)).finished();
