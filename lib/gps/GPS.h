@@ -62,7 +62,7 @@ void print_rel_pos();
 
 void get_vel_cov(float out[3][3]);
 void get_pos_cov(float out[3][3]);
-void get_gps_precision(float *hor, float *ver);
+void get_gps_precision(float *hor, float *ver, int *sats);
 
 bool is_vel_cov_valid();
 bool is_pos_cov_valid();

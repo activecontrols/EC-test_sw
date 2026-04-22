@@ -69,6 +69,7 @@ struct flight_history_t {
   int rtk_status;
   float gps_hor_prec;
   float gps_ver_prec;
+  int gps_sat_count;
 
   // points to the oldest stored data
   int read_start_pos;
@@ -133,6 +134,7 @@ struct flight_packet_t {
   int rtk_status;
   float gps_hor_prec;
   float gps_ver_prec;
+  int gps_sat_count;
 };
 
 extern flight_history_t FlightHistory; // public interface

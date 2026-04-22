@@ -165,9 +165,10 @@ void get_pos_cov(float out[3][3]) {
 }
 
 // returns in meters
-void get_gps_precision(float *hor, float *ver) {
+void get_gps_precision(float *hor, float *ver, int *sats) {
   *hor = ubx.pvt_solution.data->hAcc / 1000.0;
   *ver = ubx.pvt_solution.data->vAcc / 1000.0;
+  *sats = ubx.pvt_solution.data->numSV;
 }
 
 void pump_events() {

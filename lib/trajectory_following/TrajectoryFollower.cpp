@@ -225,9 +225,11 @@ void follow_trajectory() {
         fp.diffy_perc = diffy_perc;
         fp.rtk_status = (GPS::ubx.pvt_solution.data->flags >> 6) & 0b11;
         float hor, ver;
-        GPS::get_gps_precision(&hor, &ver);
+        int sats;
+        GPS::get_gps_precision(&hor, &ver, &sats);
         fp.gps_hor_prec = hor;
         fp.gps_ver_prec = ver;
+        fp.gps_sat_count = sats;
 
         CommandRouter::send_command("tr", fp);
       }
