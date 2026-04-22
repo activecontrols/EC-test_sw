@@ -52,7 +52,7 @@ Vector4 ASTRAv2_Controller(Vector3 PosTarget, Vector16 X, constantsASTRA_t const
   Vector3 VelError = VelTarget - X.segment<3>(7);
 
   // Integral Accumulator
-  Vector3 K_I = (Vector3() << 0.2, 0.2, 5).finished();
+  Vector3 K_I = (Vector3() << 0.2, 0.2, 1).finished();
   float Leak = 0.05;
   Vector3 Clamp = (Vector3() << 5, 5, 5).finished();
 
