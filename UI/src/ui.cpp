@@ -191,7 +191,7 @@ void estimated_pos_panel() {
     double target_z[2] = {0, FlightHistory.target_pos_up};
 
     ImPlot3D::SetupAxes("East (m)", "North (m)", "Up (m)");
-    ImPlot3D::SetupAxisLimits(ImAxis3D_Z, 0, 5);
+    ImPlot3D::SetupAxisLimits(ImAxis3D_Z, 0, 2.5);
     ImPlot3D::SetupAxisLimits(ImAxis3D_X, -1, 1);
     ImPlot3D::SetupAxisLimits(ImAxis3D_Y, -1, 1);
 
@@ -456,7 +456,7 @@ void build_dock_layout(ImGuiID dockspace_id) {
   ImGui::DockBuilderDockWindow(IMU_ACCEL_PANEL, live_sensor_tl);
   ImGui::DockBuilderDockWindow(IMU_GYRO_PANEL, live_sensor_tr);
   ImGui::DockBuilderDockWindow(MAG_PANEL, live_sensor_ml);
-  ImGui::DockBuilderDockWindow(GPS_VERT_PANEL, live_sensor_mr);
+  ImGui::DockBuilderDockWindow(ACCEL_BIAS_PANEL, live_sensor_mr);
   ImGui::DockBuilderDockWindow(GPS_POS_PANEL, live_sensor_bl);
   ImGui::DockBuilderDockWindow(GPS_VEL_PANEL, live_sensor_br);
   ImGui::DockBuilderDockWindow(DATA_MANAGEMENT_PANEL, bottom_left_panel);
@@ -495,11 +495,11 @@ void render_loop() {
   imu_gyro_panel();
   mag_panel();
   // gyro_bias_panel();
-  // accel_bias_panel();
+  accel_bias_panel();
   // mag_bias_panel();
   gps_pos_panel();
   gps_vel_panel();
-  gps_vert_panel();
+  // gps_vert_panel();
   estimated_pos_panel();
   estimated_orientation_panel();
   controller_output_panel();

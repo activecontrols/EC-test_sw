@@ -134,7 +134,7 @@ void follow_trajectory() {
       if (ci.GND_val) { // GPS lock
         ci.gps_pos_north = 0;
         ci.gps_pos_west = 0;
-        ci.gps_pos_up = 0;
+        ci.gps_pos_up = 0.31;
         ci.gps_vel_north = 0;
         ci.gps_vel_west = 0;
         ci.gps_vel_up = 0;
@@ -156,8 +156,8 @@ void follow_trajectory() {
       Prop::get_prop_perc(co.thrust_N, co.roll_rad_sec_squared, &thrust_perc, &diffy_perc);
 
       if (flight_armed) {
-        Prop::set_throttle_roll(thrust_perc, diffy_perc);
-        GimbalServos::setGimbalAngle(co.gimbal_pitch_deg, co.gimbal_yaw_deg);
+        // Prop::set_throttle_roll(thrust_perc, diffy_perc);
+        // GimbalServos::setGimbalAngle(co.gimbal_pitch_deg, co.gimbal_yaw_deg);
       }
 
       if (flight_armed) // we only want to log flight data, not pre-flight

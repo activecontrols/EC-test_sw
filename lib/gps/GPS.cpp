@@ -225,6 +225,7 @@ void set_current_position_as_origin() {
     CommsSerial.print("Warning - tried to set current position as origin without valid GPS position.");
   } else {
     origin = get_lat_lon_alt();
+    origin.alt = origin.alt - 0.31; // subtract out lever arm
   }
 }
 

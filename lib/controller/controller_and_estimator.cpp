@@ -28,10 +28,10 @@ void init_controller_and_estimator_constants() {
   constantsASTRA.R.block<3, 3>(3, 3) = Matrix3_3::Identity() * 0.100;
 
   P = Matrix18_18::Identity();
-  P.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.02;
-  P.block<3, 3>(9, 9) = Matrix3_3::Identity() * 0.03;
-  P.block<3, 3>(12, 12) = Matrix3_3::Identity() * 0.12;
-  P.block<3, 3>(15, 15) = Matrix3_3::Identity() * 0.01;
+  P.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.09;
+  P.block<3, 3>(9, 9) = Matrix3_3::Identity() * 0.001;
+  P.block<3, 3>(12, 12) = Matrix3_3::Identity() * 0.001;
+  P.block<3, 3>(15, 15) = Matrix3_3::Identity() * 0.001;
 
   x_est = Vector19::Zero();
   x_est[0] = 1;

@@ -2,11 +2,11 @@
 
 Matrix18_18 Q_gen() {
   float gyro_cov = 1e-5;
-  float gyro_bias_cov = 1e-11;
-  float accel_proc_cov = 1e-1;
-  float accel_bias_cov = 1e-10;
+  float gyro_bias_cov = 1e-12;
+  float accel_proc_cov = 3e-1;
+  float accel_bias_cov = 1e-14;
   float mag_proc_cov = 1e-1;
-  float mag_bias_cov = 1e-12; // * 3000;
+  float mag_bias_cov = 1e-15; // * 3000;
 
   // Init constants
   float dt = 0.001;
