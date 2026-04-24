@@ -30,8 +30,8 @@ void init_controller_and_estimator_constants() {
   P = Matrix18_18::Identity();
   P.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.09;
   P.block<3, 3>(9, 9) = Matrix3_3::Identity() * 0.001;
-  P.block<3, 3>(12, 12) = Matrix3_3::Identity() * 0.001;
-  P.block<3, 3>(15, 15) = Matrix3_3::Identity() * 0.001;
+  P.block<3, 3>(12, 12) = Matrix3_3::Identity() * 0.0001;
+  P.block<3, 3>(15, 15) = Matrix3_3::Identity() * 0.0001;
 
   x_est = Vector19::Zero();
   x_est[0] = 1;
@@ -102,10 +102,10 @@ Controller_Output get_controller_output(Controller_Input ci, float ideal_dT, flo
   lastEMA(1) = new_gimbal_pitch;
 
   Controller_Output co;
-  co.gimbal_yaw_deg = 0;       // new_gimbal_yaw;
-  co.gimbal_pitch_deg = 0;     // new_gimbal_pitch;
-  co.thrust_N = 0;             // raw_co(2);
-  co.roll_rad_sec_squared = 0; // raw_co(3);
+  co.gimbal_yaw_deg = new_gimbal_yaw;
+  co.gimbal_pitch_deg = new_gimbal_pitch;
+  co.thrust_N = raw_co(2);
+  co.roll_rad_sec_squared = raw_co(3);
 
   cs->state_q_vec_new = x_est(0);
   cs->state_q_vec_0 = x_est(1);
