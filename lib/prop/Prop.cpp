@@ -21,8 +21,8 @@ bool armed = false;
 #define ROLL_MEASUREMENT_QTY 4
 
 // maps thrust in N to thrust %
-float thrust_table[2][THRUST_MEASUREMENT_QTY] = {{0, 1.96029, 3.4305075, 4.900725, 6.3709425, 8.3312325, 9.80145, 13.2319575, 15.68232}, // Thrust (N)
-                                                 {0, 20, 30, 40, 50, 60, 70, 80, 90}};                                                   // Thurst (%)
+float thrust_table[2][THRUST_MEASUREMENT_QTY] = {{0, 1.96029, 3.4305075, 4.900725, 6.3709425, 8.3312325, 9.80145, 13.2319575, 14.7}, // Thrust (N)
+                                                 {0, 20, 30, 40, 50, 60, 70, 80, 100}};                                              // Thurst (%)
 
 // contains diffy %
 float roll_table_roll_perc[ROLL_MEASUREMENT_QTY] = {-30, -10, 10, 30};
