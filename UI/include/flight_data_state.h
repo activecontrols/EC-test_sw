@@ -6,6 +6,8 @@
 #include <vector>
 #include <windows.h>
 
+#include <cstdint>
+
 struct ComPortInfo {
   std::string portName;     // COM3
   std::string friendlyName; // USB Serial Device (COM3)
@@ -32,6 +34,9 @@ struct flight_data_state_t {
   int file_length;
   int file_read_progress;
   bool file_reading_paused;
+
+  uint64_t replay_play_start_us; // the time when the play button was last pressed
+  uint64_t replay_pause_offset_us; // the time "accumulated" before the play button was last pressed
 };
 
 extern flight_data_state_t FlightDataState; // this ends up in flight_data

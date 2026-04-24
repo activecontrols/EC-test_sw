@@ -44,11 +44,11 @@ void commit_packet() {
   FlightHistory.mag_z[FlightHistory.write_pos] = active_packet.mag_z;
   FlightHistory.mag_z[FlightHistory.write_pos + FLIGHT_HISTORY_LENGTH] = active_packet.mag_z;
   FlightHistory.gps_pos_north = active_packet.gps_pos_north;
-  FlightHistory.gps_pos_west = active_packet.gps_pos_north;
-  FlightHistory.gps_pos_up = active_packet.gps_pos_north;
+  FlightHistory.gps_pos_west = active_packet.gps_pos_west;
+  FlightHistory.gps_pos_up = active_packet.gps_pos_up;
   FlightHistory.gps_vel_north = active_packet.gps_vel_north;
-  FlightHistory.gps_vel_west = active_packet.gps_vel_north;
-  FlightHistory.gps_vel_up = active_packet.gps_vel_north;
+  FlightHistory.gps_vel_west = active_packet.gps_vel_west;
+  FlightHistory.gps_vel_up = active_packet.gps_vel_up;
 
   FlightHistory.state_q_vec_new = active_packet.state_q_vec_new;
   FlightHistory.state_q_vec_0 = active_packet.state_q_vec_0;
@@ -112,6 +112,9 @@ void load_flight_replay() {
 
   FlightDataState.input_file = fopen(FlightDataState.selected_file_path, "rb");
   FlightDataState.file_read_progress = 0;
+
+  FlightDataState.file_reading_paused = true;
+  FlightDataState.replay_pause_offset_us = 0;
 
   // determine file length
   if (FlightDataState.input_file != NULL) {
@@ -193,11 +196,19 @@ void flight_data_periodic() {
 
   } else {
     if (FlightDataState.input_file != NULL && !FlightDataState.file_reading_paused) {
-      for (int i = 0; i < 10; i++) { // TODO - try to sync with the timestamps
+      uint64_t now_time = get_time_us();
+      float replay_time = (now_time - FlightDataState.replay_play_start_us + FlightDataState.replay_pause_offset_us) * 1e-6;
+      while (1) {
         size_t read_size = fread(&active_packet, sizeof(active_packet), 1, FlightDataState.input_file);
         if (read_size == 1) {
           FlightDataState.file_read_progress += 1;
           commit_packet();
+          if (FlightHistory.elapsed_time > replay_time) {
+            break; // break from the loop once the replay has caught up with real time
+          }
+        } else {
+          FlightDataState.file_reading_paused = true; // pause replay as we have reached the end and don't want this loop called anymore
+          break;
         }
       }
     }

@@ -158,6 +158,7 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
     fp.mag_bias_x = cs.mag_bias_x;
     fp.mag_bias_y = cs.mag_bias_y;
     fp.mag_bias_z = cs.mag_bias_z;
+    fp.elapsed_time = this_time;
 
     fwrite(&fp, sizeof(fp), 1, reconstructed_bin);
     break;
@@ -199,7 +200,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  FILE *reconstructed_bin = fopen("reconstructed_flight.bin", "wb");
+  FILE *reconstructed_bin = fopen("reconstructed_successful_test_flight_with_timestamps.bin", "wb");
   if (reconstructed_bin == NULL) {
     fclose(compressed_bin);
     printf("Failed to create reconstructed flight log.");

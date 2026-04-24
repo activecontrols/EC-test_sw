@@ -12,6 +12,10 @@
 #include <shlwapi.h>  // file path management
 #include <shobjidl.h> // IFileOpenDialog
 
+#include <cstdint>
+
+uint64_t lpFrequency;
+
 // will fill path if file is chosen
 // TODO - restrict file type
 void OpenFileDialog(char *path) {
@@ -167,4 +171,19 @@ void write_to_serial_port(HANDLE *hSerial, bool *open_flag, const char *msg, siz
       return;
     }
   }
+}
+
+// get time in microseconds, not synced to any external reference
+unsigned long long get_time_us()
+{
+  LARGE_INTEGER temp;
+  QueryPerformanceCounter(&temp);
+  return temp.QuadPart * 1000000 / lpFrequency; // todo - is potential overflow here concerning? nahhh
+}
+
+void platform_begin()
+{
+  LARGE_INTEGER temp;
+  QueryPerformanceFrequency(&temp); // per windows docs - this value doesn't change and can be cached
+  lpFrequency = temp.QuadPart;
 }

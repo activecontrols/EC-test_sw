@@ -416,6 +416,18 @@ void data_management_panel() {
       // --- Play / Pause ---
       if (ImGui::Button(FlightDataState.file_reading_paused ? "\uE102" : "\uE103", ImVec2(100, 40))) {
         FlightDataState.file_reading_paused = !FlightDataState.file_reading_paused;
+
+        if (FlightDataState.file_reading_paused) {
+          FlightDataState.replay_pause_offset_us += get_time_us() - FlightDataState.replay_play_start_us;
+        } else {
+          if (FlightDataState.file_read_progress == FlightDataState.file_length) {
+            // if the user pressed play after the replay ended, go back to the beginning
+            FlightDataState.file_read_progress = 0;
+            FlightDataState.replay_pause_offset_us = 0;
+            fseek(FlightDataState.input_file, 0, SEEK_SET);
+          }
+          FlightDataState.replay_play_start_us = get_time_us();
+        }
       }
     }
   }

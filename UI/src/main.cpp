@@ -20,6 +20,8 @@
 #include "ui.h"
 #include "ui_components.h" // for loading fonts
 
+#include "platform_win.h"
+
 // Data
 static ID3D11Device *g_pd3dDevice = nullptr;
 static ID3D11DeviceContext *g_pd3dDeviceContext = nullptr;
@@ -38,6 +40,8 @@ LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 // Main code
 int main(int argc, char **argv) {
   init_flight_data();
+
+  platform_begin();
 
   // Make process DPI aware and obtain main monitor scale
   ImGui_ImplWin32_EnableDpiAwareness();
