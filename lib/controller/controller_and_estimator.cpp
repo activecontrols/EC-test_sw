@@ -11,7 +11,7 @@ Matrix9_4 dnf_X;
 Matrix9_4 dnf_Y;
 float last_thrust;
 bool last_GND;
-const float tau = 0.06; // seconds - time constant for ema low pass filter applied to gimbal angles
+const float tau = 0.03; // seconds - time constant for ema low pass filter applied to gimbal angles
 
 void init_controller_and_estimator_constants() {
   constantsASTRA.g = 9.8015;
@@ -19,9 +19,9 @@ void init_controller_and_estimator_constants() {
   constantsASTRA.mag << 0.38535, 0.03198, -0.9222;
   constantsASTRA.Q = Q_gen();
 
-  constantsASTRA.K_Att << 1.352064e+00, -7.314324e-16, 1.148768e-15, 2.904749e-01, -4.841914e-17, 7.279040e-16, -2.449490e-01, 6.059280e-16, -5.773700e-16, //
-      -4.137541e-16, 1.352064e+00, -7.660512e-16, -8.466230e-17, 2.904749e-01, -2.854786e-16, -1.690909e-17, -2.449490e-01, 5.500491e-16,                   //
-      -3.855847e-16, -1.235453e-16, 4.035990e+00, 6.166436e-18, 9.655438e-17, 2.059154e+00, -3.427438e-17, -7.983036e-17, -1.581139e+00;                    //
+  constantsASTRA.K_Att << 1.394935e+00, 4.672543e-16, -7.564760e-16, 4.106678e-01, 8.281746e-17, -4.138796e-17, -2.449490e-01, -1.843561e-16, 3.177379e-16, //
+      -3.283640e-16, 1.394935e+00, -5.002970e-17, 9.692012e-18, 4.106678e-01, 3.141303e-17, -2.199100e-16, -2.449490e-01, 5.048427e-16,                     //
+      7.781684e-16, 4.351920e-16, 6.015416e+00, 8.275175e-17, 1.006071e-16, 2.493901e+00, -9.720773e-17, 1.731782e-16, -1.581139e+00;                       //                 //
 
   constantsASTRA.R = Matrix6_6::Zero();
   constantsASTRA.R.block<3, 3>(0, 0) = Matrix3_3::Identity() * 0.050;
