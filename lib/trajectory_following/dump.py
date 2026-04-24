@@ -16,7 +16,7 @@ def main():
         
         print(f"Connected to {SERIAL_PORT}. Starting dump...")
 
-        ser.write(b'dump_flash\n')
+        # ser.write(b'dump_flash\n') # dump must be triggered from CommsSerial not necessarily usb
         
         with open(OUTPUT_FILE, "wb") as f:
             total_bytes = 0

@@ -134,13 +134,13 @@ void send_flash_over_serial() {
   int idx = 0;
   while (1) {
     // wait for serial to send a c before sending the next page
-    while (!CommsSerial.available()) {
+    while (!USB_CommsSerial.available()) {
     }
 
     char c;
 
     do {
-      c = CommsSerial.read();
+      c = USB_CommsSerial.read();
     } while (!(c == 'k' || c == 'c'));
 
     if (c == 'k') {
@@ -149,7 +149,7 @@ void send_flash_over_serial() {
 
     Flash::read(addr, PAGE_SIZE, last_page);
 
-    CommsSerial.write(last_page, sizeof(last_page));
+    USB_CommsSerial.write(last_page, sizeof(last_page));
 
     bool end = true;
 
@@ -163,15 +163,15 @@ void send_flash_over_serial() {
       }
     }
 
-    CommsSerial.write(cs_A);
-    CommsSerial.write(cs_B);
+    USB_CommsSerial.write(cs_A);
+    USB_CommsSerial.write(cs_B);
 
     if (end) {
-      CommsSerial.write('k');
+      USB_CommsSerial.write('k');
       break;
     }
 
-    CommsSerial.write('c');
+    USB_CommsSerial.write('c');
 
     idx %= PAGE_SIZE;
 
