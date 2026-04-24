@@ -193,7 +193,7 @@ bool parse_log_entry(FILE *compressed_bin, FILE *reconstructed_bin) {
 }
 
 int main() {
-  FILE *compressed_bin = fopen("gimbal_ema_test.bin", "rb");
+  FILE *compressed_bin = fopen("successful_flight_test.bin", "rb");
   if (compressed_bin == NULL) {
     printf("Failed to open compressed log dump.");
     return EXIT_FAILURE;
