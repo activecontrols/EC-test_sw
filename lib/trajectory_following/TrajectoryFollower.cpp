@@ -244,6 +244,8 @@ void follow_trajectory() {
     }
   }
 
+  Logging::disarm();
+
   Prop::stop();
 
   fp.flight_armed = false;
