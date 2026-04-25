@@ -24,7 +24,8 @@ void ping(const char *args) {
 void setup() {
   delay(3000);
   SPI.begin(); // spi is a shared interface, so we always begin here
-  CommsSerial.begin(57600);
+  HW_CommsSerial.begin(57600);
+  USB_CommsSerial.begin(57600);
   CommsSerial.println("Controller started.");
 
   // TODO - configure CS somewhere else!
