@@ -79,7 +79,7 @@ void print_gps_events() {
       CommsSerial.printf("Altitude (m): %lf\n", altitude);
       CommsSerial.printf("Horizontal Accuracy Estimate (m): %lf\n", ubx.pvt_solution.data->hAcc / 1000.0);
       CommsSerial.printf("Vertical Accuracy Estimate (m): %lf\n", ubx.pvt_solution.data->vAcc / 1000.0);
-
+      CommsSerial.printf("carrSoln: %d\n", (ubx.pvt_solution.data->flags >> 6) & 0b11);
       CommsSerial.println("================");
     }
 
@@ -203,6 +203,9 @@ void pump_events() {
     CommsSerial.printf("Velocity East  (m/s): %lf\n", velocity_east);
     CommsSerial.printf("Velocity Down  (m/s): %lf\n", velocity_down);
     CommsSerial.printf("Altitude (m): %lf\n", altitude);
+    CommsSerial.printf("Horizontal Accuracy Estimate (m): %lf\n", ubx.pvt_solution.data->hAcc / 1000.0);
+    CommsSerial.printf("Vertical Accuracy Estimate (m): %lf\n", ubx.pvt_solution.data->vAcc / 1000.0);
+    CommsSerial.printf("carrSoln: %d\n", (ubx.pvt_solution.data->flags >> 6) & 0b11);
     CommsSerial.println("================");
 
     ubx.pvt_solution.updated = false;
