@@ -1,11 +1,8 @@
 #include "ADS131M0x.h"
-#include "Adafruit_MAX31856.h"
 #include "CommandRouter.h"
 #include "CommsSerial.h"
 #include "SPI.h"
-#include "SPI_Demux.h"
-#include "SPI_Fixed.h"
-#include "Thermocouples.h"
+#include <Adafruit_MAX31856.h>
 
 CommsSerial_t<HardwareSerial> HW_CommsSerial(PIN_SERIAL_RX, PIN_SERIAL_TX);
 CommsSerial_t<USBSerial> USB_CommsSerial;
