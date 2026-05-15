@@ -240,13 +240,13 @@
 #define PIN_SPI_SS3 PNUM_NOT_DEFINED
 #endif
 #ifndef PIN_SPI_MOSI
-#define PIN_SPI_MOSI PI3
+#define PIN_SPI_MOSI PD7
 #endif
 #ifndef PIN_SPI_MISO
-#define PIN_SPI_MISO PI2
+#define PIN_SPI_MISO PG9
 #endif
 #ifndef PIN_SPI_SCK
-#define PIN_SPI_SCK PB10
+#define PIN_SPI_SCK PG11
 #endif
 
 // I2C definitions
@@ -274,10 +274,10 @@
 // Default pin used for generic 'Serial' instance
 // Mandatory for Firmata
 #ifndef PIN_SERIAL_RX
-#define PIN_SERIAL_RX PG9
+#define PIN_SERIAL_RX PA1
 #endif
 #ifndef PIN_SERIAL_TX
-#define PIN_SERIAL_TX PG14
+#define PIN_SERIAL_TX PA0
 #endif
 
 // Extra HAL modules
